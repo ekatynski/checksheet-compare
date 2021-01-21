@@ -1,9 +1,10 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 jar {
@@ -12,12 +13,30 @@ jar {
     }
 }
 
+// Output to build/libs/shadow.jar
+shadowJar {
+    archiveBaseName.set('shadow')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+
 dependencies {
+
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.json:json:20201115'
     implementation 'org.apache.poi:poi-ooxml:5.0.0'
     testImplementation 'junit:junit:4.13'
+
+}
+
+task copyLibs(type: Copy) {
+    from configurations.compile
+    into 'libs'
 }
 
 group 'com.hatci.ccs'
 version ''
+
+
 

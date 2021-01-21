@@ -1,7 +1,11 @@
 package com.hatci.ccs;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Configurator {
 
@@ -27,7 +31,9 @@ public class Configurator {
         this.directoryCheck("output");  // where the comparison chart is saved
 
         // searches for config file to set up app before checksheet compare begins
-        this.configFileCheck();
+        if (!this.configFileCheck()) {
+            //this.configFileRead();
+        }
 
         // searches for clickable batch file
         this.exeCheck();
@@ -47,7 +53,8 @@ public class Configurator {
         }
     }
 
-    private void configFileCheck() {
+    private boolean configFileCheck() {
+        boolean configCreated = false;
         // check if config file exists
         String fileName = "../config/config.json";
         File configFile = new File(fileName);
@@ -56,6 +63,7 @@ public class Configurator {
             try {
                 System.out.println("No config file detected.");
                 configFile.createNewFile();
+                configCreated = true;
                 if (configFile.isFile()) {
                     System.out.println("Config file created.");
                     configFileDefault(fileName);
@@ -65,6 +73,7 @@ public class Configurator {
                 e.printStackTrace();
             }
         }
+        return configCreated;
     }
 
     private void configFileDefault(String fileName) {
@@ -96,6 +105,35 @@ public class Configurator {
         }
     }
 
+    public void configFileRead() {
+        String fileName = "../config/config.json";
+        JSONObject newObj;
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader(fileName));
+            JSONObject configFile = (JSONObject)obj;
+            JSONObject platformSettings = (JSONObject)configFile.get("platform");
+            this.setColCan((int) ((long) configFile.get("colCan")));
+            this.setColCategory((int) ((long) configFile.get("colCategory")));
+            this.setColFeature((int) ((long) configFile.get("colFeature")));
+            this.setColTestCase((int) ((long) configFile.get("colTestCase")));
+            this.setColUs((int) ((long) configFile.get("colUs")));
+            this.setFormat((String) configFile.get("format"));
+            this.setIncludeInvalid((boolean) configFile.get("includeInvalid"));
+            this.setIncludeOther((boolean) configFile.get("includeOther"));
+            this.setLeadingSheets((int) ((long) configFile.get("leadingSheets")));
+            this.setPlatformCol((int) ((long) platformSettings.get("col")));
+            this.setPlatformRow((int) ((long) platformSettings.get("row")));
+            this.setPlatformSheet((int) ((long) platformSettings.get("sheet")));
+            this.setRowStart((int) ((long) configFile.get("rowStart")));
+
+            System.out.println("Config settings updated from file.");
+        }
+        catch  (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void exeCheck() {
         // checks to make sure a convenient clickable executable is present
         String fileName = "checksheet-compare.bat";
@@ -113,15 +151,13 @@ public class Configurator {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void exeFileSetup(String fileName) {
         try {
             FileWriter exeFile = new FileWriter(fileName);
-            // Investigate adding %~dp0 directory pointer
-            // Investigate changing forward slashes to backslashes
-            exeFile.write("java -jar %~dp0/checksheet-compare.jar");
+            // need to investigate changing jar file name from absolute value
+            exeFile.write("java -jar %~dp0/checksheet-compare.jar \npause");
             System.out.println("Batch file created for easy use.");
             exeFile.close();
         }
@@ -130,45 +166,24 @@ public class Configurator {
         }
     }
 
-    public void configFileRead() {
-
-    }
-
     // standard sets and gets
-    public void setColCan(int colCan) {
-        this.colCan = colCan;
-    }
+    public void setColCan(int colCan) { this.colCan = colCan; }
 
-    public int getColCan() {
-        return this.colCan;
-    }
+    public int getColCan() { return this.colCan; }
 
-    public void setColCategory(int colCategory) {
-        this.colCategory = colCategory;
-    }
-    public int getColCategory() {
-        return this.colCategory;
-    }
+    public void setColCategory(int colCategory) { this.colCategory = colCategory; }
 
-    public void setColFeature(int colFeature) {
-        this.colFeature = colFeature;
-    }
+    public int getColCategory() { return this.colCategory; }
 
-    public int getColFeature() {
-        return this.colFeature;
-    }
+    public void setColFeature(int colFeature) { this.colFeature = colFeature; }
 
-    public void setColTestCase(int colTestCase) {
-        this.colTestCase = colTestCase;
-    }
+    public int getColFeature() { return this.colFeature; }
 
-    public int getColTestCase() {
-        return this.colTestCase;
-    }
+    public void setColTestCase(int colTestCase) { this.colTestCase = colTestCase; }
 
-    public void setColUs(int colUs) {
-        this.colUs = colUs;
-    }
+    public int getColTestCase() { return this.colTestCase; }
+
+    public void setColUs(int colUs) { this.colUs = colUs; }
 
     public int getColUs() {
         return this.colUs;
