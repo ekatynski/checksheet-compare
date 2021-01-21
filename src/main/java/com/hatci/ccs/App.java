@@ -9,5 +9,8 @@ public class App {
         XSSFWorkbook wb = new XSSFWorkbook();
 
         Configurator myConfig = new Configurator();
+        if(myConfig.checkAll()) {
+
+        }
     }
 }

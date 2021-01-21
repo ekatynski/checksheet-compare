@@ -8,6 +8,10 @@ import org.json.simple.parser.JSONParser;
 
 public class Configurator {
 
+    // file names for the checksheets being compared
+    private String fileOne;
+    private String fileTwo;
+
     // default configuration file values
     private int colCan = 8;
     private int colCategory = 15;
@@ -24,10 +28,18 @@ public class Configurator {
     private int rowStart = 17;
 
     public Configurator() {
+
+    }
+
+    public boolean checkAll() {
+        boolean ready = true;
+        System.out.println("");
         // ensures all regular use directories are present
-        this.directoryCheck("config");  // contains config.json file
-        this.directoryCheck("input");   // where checksheet files are placed
-        this.directoryCheck("output");  // where the comparison chart is saved
+        // contains config.json file, checksheets for input, and chart output respectively
+        ready = (ready && this.directoryCheck("config")
+                && this.directoryCheck("input")
+                && this.directoryCheck("output")
+        );
 
         // searches for config file to set up app before checksheet compare begins
         if (!this.configFileCheck()) {
@@ -37,12 +49,20 @@ public class Configurator {
 
         // searches for clickable batch file
         this.exeCheck();
+
+        // check to ensure exactly two checksheets are present
+        System.out.println("");
+        ready = (ready && this.fileCheck());
+
+        return (ready);
     }
 
-    private void directoryCheck(String dirName) {
+    private boolean directoryCheck(String dirName) {
         // check if searched directory exists
+        boolean ready = true;
         File checkDir = new File("../" + dirName);
         if (!checkDir.isDirectory()) {
+            ready = false;
             System.out.println("No " + dirName + " directory exists.");
             // create directory in question if none exists
             checkDir.mkdirs();
@@ -55,6 +75,7 @@ public class Configurator {
             System.out.println(dirName.substring(0, 1).toUpperCase()
                     + dirName.substring(1) + " directory found.");
         }
+        return (ready);
     }
 
     private boolean configFileCheck() {
@@ -166,6 +187,7 @@ public class Configurator {
     }
 
     private void exeFileSetup(String fileName) {
+        // populate batch file
         try {
             FileWriter exeFile = new FileWriter(fileName);
             // need to investigate changing jar file name from absolute value
@@ -178,12 +200,62 @@ public class Configurator {
         }
     }
 
-    private void fileCheck() {
+    private boolean fileCheck() {
+        // ensure there are two checksheets of specified file type in input folder
+        boolean correctFiles = false;
+        int fileCount = 0;
+        String[] pathnames;
+        File f = new File("../input");
+        pathnames = f.list();
 
+        // count the number of files ending
+        for (String pathname: pathnames) {
+            // hidden files are also rejected
+            if (pathname.endsWith(this.getFormat()) && !pathname.startsWith(".")) {
+                fileCount++;
+            }
+        }
+
+        // correct file count
+        if (fileCount == 2) {
+            System.out.println("Checksheets located.");
+            correctFiles = true;
+            this.setFileOne(pathnames[0]);
+            this.setFileTwo(pathnames[1]);
+        }
+        // incorrect file count
+        else if (fileCount >= 0 && fileCount != 2) {
+            System.out.println("Incorrect number of files of requested type.");
+        }
+        // fileCheck fails entirely
+        else {
+            System.out.println("Location error.");
+        }
+
+        // list located files
+        System.out.println("Located files: ");
+        if (fileCount == 2) {
+            System.out.println(this.getFileOne() + "\n" + this.getFileTwo());
+        }
+        else if (fileCount >= 0 && fileCount != 2) {
+            for (int i = 0; i < pathnames.length; i++) {
+                System.out.println(pathnames[i]);
+            }
+        }
+
+        return correctFiles;
     }
 
 
     // standard sets and gets
+    public void setFileOne(String fileOne) { this.fileOne = fileOne; }
+
+    public String getFileOne() { return (this.fileOne); }
+
+    public void setFileTwo(String fileTwo) { this.fileTwo = fileTwo; }
+
+    public String getFileTwo() { return (this.fileTwo); }
+
     public void setColCan(int colCan) { this.colCan = colCan; }
 
     public int getColCan() { return this.colCan; }
