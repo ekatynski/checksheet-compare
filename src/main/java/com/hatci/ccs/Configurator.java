@@ -155,7 +155,7 @@ public class Configurator {
         try {
             FileWriter exeFile = new FileWriter(fileName);
             // need to investigate changing jar file name from absolute value
-            exeFile.write("java -jar %~dp0/checksheet-compare.jar \npause");
+            exeFile.write("java -jar %~dp0/checksheet-compare-all.jar \npause");
             System.out.println("Batch file created for easy use.");
             exeFile.close();
         }
