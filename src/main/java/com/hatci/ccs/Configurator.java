@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Configurator {
 
@@ -107,7 +106,6 @@ public class Configurator {
 
     public void configFileRead() {
         String fileName = "../config/config.json";
-        JSONObject newObj;
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(new FileReader(fileName));
