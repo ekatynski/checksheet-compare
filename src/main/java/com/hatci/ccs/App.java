@@ -12,5 +12,9 @@ public class App {
         if(myConfig.checkAll()) {
 
         }
+        else {
+            System.out.println("Additional configuration needed." +
+                    " Try re-running the program. Check console output for info.");
+        }
     }
 }
