@@ -121,7 +121,7 @@ public class Configurator {
             FileWriter exeFile = new FileWriter(fileName);
             // Investigate adding %~dp0 directory pointer
             // Investigate changing forward slashes to backslashes
-            exeFile.write("java -jar %~dp0/checksheet-compare-1.0-SNAPSHOT.jar");
+            exeFile.write("java -jar %~dp0/checksheet-compare.jar");
             System.out.println("Batch file created for easy use.");
             exeFile.close();
         }
