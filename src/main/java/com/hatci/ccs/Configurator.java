@@ -31,7 +31,8 @@ public class Configurator {
 
         // searches for config file to set up app before checksheet compare begins
         if (!this.configFileCheck()) {
-            //this.configFileRead();
+            // imports settings from config file if one existed before the check
+            this.configFileRead();
         }
 
         // searches for clickable batch file
@@ -50,6 +51,10 @@ public class Configurator {
                         + dirName.substring(1) + " directory created.");
             }
         }
+        else {
+            System.out.println(dirName.substring(0, 1).toUpperCase()
+                    + dirName.substring(1) + " directory found.");
+        }
     }
 
     private boolean configFileCheck() {
@@ -62,6 +67,7 @@ public class Configurator {
             try {
                 System.out.println("No config file detected.");
                 configFile.createNewFile();
+                // if the config file is created using defaults, no point in importing settings
                 configCreated = true;
                 if (configFile.isFile()) {
                     System.out.println("Config file created.");
@@ -71,6 +77,9 @@ public class Configurator {
             catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        else {
+            System.out.println("Config file found.");
         }
         return configCreated;
     }
@@ -97,7 +106,7 @@ public class Configurator {
                     " \"rowStart\": 17\n" +
                     "}");
             configFile.close();
-            System.out.println("Config settings successfully updated.");
+            System.out.println("No config settings present; defaults applied to config.json file.");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -107,6 +116,7 @@ public class Configurator {
     public void configFileRead() {
         String fileName = "../config/config.json";
         JSONParser parser = new JSONParser();
+        // read config.json to import settings
         try {
             Object obj = parser.parse(new FileReader(fileName));
             JSONObject configFile = (JSONObject)obj;
@@ -125,7 +135,7 @@ public class Configurator {
             this.setPlatformSheet((int) ((long) platformSettings.get("sheet")));
             this.setRowStart((int) ((long) configFile.get("rowStart")));
 
-            System.out.println("Config settings updated from file.");
+            System.out.println("Config settings updated from config.json file.");
         }
         catch  (Exception e) {
             e.printStackTrace();
@@ -142,12 +152,16 @@ public class Configurator {
                 System.out.println("No clickable batch file present.");
                 exeFile.createNewFile();
                 if(exeFile.isFile()) {
+                    // populate batch file
                     this.exeFileSetup(fileName);
                 }
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        else {
+            System.out.println("Batch file present.");
         }
     }
 
@@ -163,6 +177,11 @@ public class Configurator {
             e.printStackTrace();
         }
     }
+
+    private void fileCheck() {
+
+    }
+
 
     // standard sets and gets
     public void setColCan(int colCan) { this.colCan = colCan; }
@@ -183,72 +202,38 @@ public class Configurator {
 
     public void setColUs(int colUs) { this.colUs = colUs; }
 
-    public int getColUs() {
-        return this.colUs;
-    }
+    public int getColUs() { return this.colUs; }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+    public void setFormat(String format) { this.format = format; }
 
-    public String getFormat() {
-        return this.format;
-    }
+    public String getFormat() { return this.format; }
 
-    public void setIncludeInvalid(boolean includeInvalid) {
-        this.includeInvalid = includeInvalid;
-    }
+    public void setIncludeInvalid(boolean includeInvalid) { this.includeInvalid = includeInvalid; }
 
-    public boolean getIncludeInvalid() {
-        return this.includeInvalid;
-    }
+    public boolean getIncludeInvalid() { return this.includeInvalid; }
 
-    public void setIncludeOther(boolean includeOther) {
-        this.includeOther = includeOther;
-    }
+    public void setIncludeOther(boolean includeOther) { this.includeOther = includeOther; }
 
-    public boolean getIncludeOther() {
-        return this.includeOther;
-    }
+    public boolean getIncludeOther() { return this.includeOther; }
 
-    public void setLeadingSheets(int leadingSheets) {
-        this.leadingSheets = leadingSheets;
-    }
+    public void setLeadingSheets(int leadingSheets) { this.leadingSheets = leadingSheets; }
 
-    public int getLeadingSheets() {
-        return this.leadingSheets;
-    }
+    public int getLeadingSheets() { return this.leadingSheets; }
 
-    public void setPlatformCol(int platformCol) {
-        this.platformCol = platformCol;
-    }
+    public void setPlatformCol(int platformCol) { this.platformCol = platformCol; }
 
-    public int getPlatformCol() {
-        return this.platformCol;
-    }
+    public int getPlatformCol() { return this.platformCol; }
 
-    public void setPlatformRow(int platformRow) {
-        this.platformRow = platformRow;
-    }
+    public void setPlatformRow(int platformRow) { this.platformRow = platformRow; }
 
-    public int getPlatformRow() {
-        return this.platformRow;
-    }
+    public int getPlatformRow() { return this.platformRow; }
 
-    public void setPlatformSheet(int platformSheet) {
-        this.platformSheet = platformSheet;
-    }
+    public void setPlatformSheet(int platformSheet) { this.platformSheet = platformSheet; }
 
-    public int getPlatformSheet() {
-        return this.platformSheet;
-    }
+    public int getPlatformSheet() { return this.platformSheet; }
 
-    public void setRowStart(int rowStart) {
-        this.rowStart = rowStart;
-    }
+    public void setRowStart(int rowStart) { this.rowStart = rowStart; }
 
-    public int getRowStart() {
-        return this.rowStart;
-    }
+    public int getRowStart() { return this.rowStart; }
 
 }
