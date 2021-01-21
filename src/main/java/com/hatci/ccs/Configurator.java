@@ -8,6 +8,10 @@ import org.json.simple.parser.JSONParser;
 
 public class Configurator {
 
+    // file names for the checksheets being compared
+    private String fileOne;
+    private String fileTwo;
+
     // default configuration file values
     private int colCan = 8;
     private int colCategory = 15;
@@ -22,26 +26,44 @@ public class Configurator {
     private int platformRow = 3;
     private int platformSheet = leadingSheets + 1;
     private int rowStart = 17;
+    private int sheetCount = 9;
 
     public Configurator() {
+
+    }
+
+    public boolean checkAll() {
+        boolean ready = true;
+        System.out.println("");
         // ensures all regular use directories are present
-        this.directoryCheck("config");  // contains config.json file
-        this.directoryCheck("input");   // where checksheet files are placed
-        this.directoryCheck("output");  // where the comparison chart is saved
+        // contains config.json file, checksheets for input, and chart output respectively
+        ready = (ready && this.directoryCheck("config")
+                && this.directoryCheck("input")
+                && this.directoryCheck("output")
+        );
 
         // searches for config file to set up app before checksheet compare begins
         if (!this.configFileCheck()) {
-            //this.configFileRead();
+            // imports settings from config file if one existed before the check
+            this.configFileRead();
         }
 
         // searches for clickable batch file
         this.exeCheck();
+
+        // check to ensure exactly two checksheets are present
+        System.out.println("");
+        ready = (ready && this.fileCheck());
+
+        return (ready);
     }
 
-    private void directoryCheck(String dirName) {
+    private boolean directoryCheck(String dirName) {
         // check if searched directory exists
+        boolean ready = true;
         File checkDir = new File("../" + dirName);
         if (!checkDir.isDirectory()) {
+            ready = false;
             System.out.println("No " + dirName + " directory exists.");
             // create directory in question if none exists
             checkDir.mkdirs();
@@ -50,6 +72,11 @@ public class Configurator {
                         + dirName.substring(1) + " directory created.");
             }
         }
+        else {
+            System.out.println(dirName.substring(0, 1).toUpperCase()
+                    + dirName.substring(1) + " directory found.");
+        }
+        return (ready);
     }
 
     private boolean configFileCheck() {
@@ -62,6 +89,7 @@ public class Configurator {
             try {
                 System.out.println("No config file detected.");
                 configFile.createNewFile();
+                // if the config file is created using defaults, no point in importing settings
                 configCreated = true;
                 if (configFile.isFile()) {
                     System.out.println("Config file created.");
@@ -71,6 +99,9 @@ public class Configurator {
             catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        else {
+            System.out.println("Config file found.");
         }
         return configCreated;
     }
@@ -95,9 +126,10 @@ public class Configurator {
                     "\t\"sheet\": 3\n" +
                     " },\n" +
                     " \"rowStart\": 17\n" +
+                    " \"sheetCount\": 9\n" +
                     "}");
             configFile.close();
-            System.out.println("Config settings successfully updated.");
+            System.out.println("No config settings present; defaults applied to config.json file.");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -107,6 +139,7 @@ public class Configurator {
     public void configFileRead() {
         String fileName = "../config/config.json";
         JSONParser parser = new JSONParser();
+        // read config.json to import settings
         try {
             Object obj = parser.parse(new FileReader(fileName));
             JSONObject configFile = (JSONObject)obj;
@@ -124,8 +157,9 @@ public class Configurator {
             this.setPlatformRow((int) ((long) platformSettings.get("row")));
             this.setPlatformSheet((int) ((long) platformSettings.get("sheet")));
             this.setRowStart((int) ((long) configFile.get("rowStart")));
+            this.setSheetCount((int) ((long) configFile.get("sheetCount")));
 
-            System.out.println("Config settings updated from file.");
+            System.out.println("Config settings updated from config.json file.");
         }
         catch  (Exception e) {
             e.printStackTrace();
@@ -142,6 +176,7 @@ public class Configurator {
                 System.out.println("No clickable batch file present.");
                 exeFile.createNewFile();
                 if(exeFile.isFile()) {
+                    // populate batch file
                     this.exeFileSetup(fileName);
                 }
             }
@@ -149,9 +184,13 @@ public class Configurator {
                 e.printStackTrace();
             }
         }
+        else {
+            System.out.println("Batch file present.");
+        }
     }
 
     private void exeFileSetup(String fileName) {
+        // populate batch file
         try {
             FileWriter exeFile = new FileWriter(fileName);
             // need to investigate changing jar file name from absolute value
@@ -164,91 +203,113 @@ public class Configurator {
         }
     }
 
+    private boolean fileCheck() {
+        // ensure there are two checksheets of specified file type in input folder
+        boolean correctFiles = false;
+        int fileCount = 0;
+        String[] pathnames;
+        File f = new File("../input");
+        pathnames = f.list();
+
+        // count the number of files ending
+        for (String pathname: pathnames) {
+            // hidden files are also rejected
+            if (pathname.endsWith(this.getFormat()) && !pathname.startsWith(".")) {
+                fileCount++;
+            }
+        }
+
+        // correct file count
+        if (fileCount == 2) {
+            System.out.println("Checksheets located.");
+            correctFiles = true;
+            this.setFileOne(pathnames[0]);
+            this.setFileTwo(pathnames[1]);
+        }
+        // incorrect file count
+        else if (fileCount >= 0 && fileCount != 2) {
+            System.out.println("Incorrect number of files of requested type.");
+        }
+        // fileCheck fails entirely
+        else {
+            System.out.println("Location error.");
+        }
+
+        // list located files
+        System.out.println("Located files: ");
+        if (fileCount == 2) {
+            System.out.println(this.getFileOne() + "\n" + this.getFileTwo());
+        }
+        else if (fileCount >= 0 && fileCount != 2) {
+            for (int i = 0; i < pathnames.length; i++) {
+                System.out.println(pathnames[i]);
+            }
+        }
+        return correctFiles;
+    }
+
     // standard sets and gets
-    public void setColCan(int colCan) { this.colCan = colCan; }
+    private void setFileOne(String fileOne) { this.fileOne = fileOne; }
+
+    public String getFileOne() { return (this.fileOne); }
+
+    private void setFileTwo(String fileTwo) { this.fileTwo = fileTwo; }
+
+    public String getFileTwo() { return (this.fileTwo); }
+
+    private void setColCan(int colCan) { this.colCan = colCan; }
 
     public int getColCan() { return this.colCan; }
 
-    public void setColCategory(int colCategory) { this.colCategory = colCategory; }
+    private void setColCategory(int colCategory) { this.colCategory = colCategory; }
 
     public int getColCategory() { return this.colCategory; }
 
-    public void setColFeature(int colFeature) { this.colFeature = colFeature; }
+    private void setColFeature(int colFeature) { this.colFeature = colFeature; }
 
     public int getColFeature() { return this.colFeature; }
 
-    public void setColTestCase(int colTestCase) { this.colTestCase = colTestCase; }
+    private void setColTestCase(int colTestCase) { this.colTestCase = colTestCase; }
 
     public int getColTestCase() { return this.colTestCase; }
 
-    public void setColUs(int colUs) { this.colUs = colUs; }
+    private void setColUs(int colUs) { this.colUs = colUs; }
 
-    public int getColUs() {
-        return this.colUs;
-    }
+    public int getColUs() { return this.colUs; }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+    private void setFormat(String format) { this.format = format; }
 
-    public String getFormat() {
-        return this.format;
-    }
+    public String getFormat() { return this.format; }
 
-    public void setIncludeInvalid(boolean includeInvalid) {
-        this.includeInvalid = includeInvalid;
-    }
+    private void setIncludeInvalid(boolean includeInvalid) { this.includeInvalid = includeInvalid; }
 
-    public boolean getIncludeInvalid() {
-        return this.includeInvalid;
-    }
+    public boolean getIncludeInvalid() { return this.includeInvalid; }
 
-    public void setIncludeOther(boolean includeOther) {
-        this.includeOther = includeOther;
-    }
+    private void setIncludeOther(boolean includeOther) { this.includeOther = includeOther; }
 
-    public boolean getIncludeOther() {
-        return this.includeOther;
-    }
+    public boolean getIncludeOther() { return this.includeOther; }
 
-    public void setLeadingSheets(int leadingSheets) {
-        this.leadingSheets = leadingSheets;
-    }
+    private void setLeadingSheets(int leadingSheets) { this.leadingSheets = leadingSheets; }
 
-    public int getLeadingSheets() {
-        return this.leadingSheets;
-    }
+    public int getLeadingSheets() { return this.leadingSheets; }
 
-    public void setPlatformCol(int platformCol) {
-        this.platformCol = platformCol;
-    }
+    private void setPlatformCol(int platformCol) { this.platformCol = platformCol; }
 
-    public int getPlatformCol() {
-        return this.platformCol;
-    }
+    public int getPlatformCol() { return this.platformCol; }
 
-    public void setPlatformRow(int platformRow) {
-        this.platformRow = platformRow;
-    }
+    private void setPlatformRow(int platformRow) { this.platformRow = platformRow; }
 
-    public int getPlatformRow() {
-        return this.platformRow;
-    }
+    public int getPlatformRow() { return this.platformRow; }
 
-    public void setPlatformSheet(int platformSheet) {
-        this.platformSheet = platformSheet;
-    }
+    private void setPlatformSheet(int platformSheet) { this.platformSheet = platformSheet; }
 
-    public int getPlatformSheet() {
-        return this.platformSheet;
-    }
+    public int getPlatformSheet() { return this.platformSheet; }
 
-    public void setRowStart(int rowStart) {
-        this.rowStart = rowStart;
-    }
+    private void setRowStart(int rowStart) { this.rowStart = rowStart; }
 
-    public int getRowStart() {
-        return this.rowStart;
-    }
+    public int getRowStart() { return this.rowStart; }
 
+    private void setSheetCount(int sheetCount) { this.sheetCount = sheetCount; }
+
+    public int getSheetCount() { return this.sheetCount;}
 }
