@@ -25,7 +25,7 @@ public class Checksheet {
 
     }
 
-    Checksheet(String fileName) {
+    Checksheet(String fileName, Configurator config) {
         // open checksheet file
         this.fileName = fileName;
         file = new File("../input/" + fileName);

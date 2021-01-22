@@ -13,7 +13,7 @@ public class App {
                     " Check console output for info.");
         }
 
-        Checksheet checksheet1 = new Checksheet(myConfig.getFileOne());
+        Checksheet checksheet1 = new Checksheet(myConfig.getFileOne(), myConfig);
 
     }
 }
