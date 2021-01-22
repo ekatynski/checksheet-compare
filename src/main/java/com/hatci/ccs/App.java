@@ -4,7 +4,7 @@ public class App {
     public static void main(String[] args) {
         Configurator myConfig = new Configurator();
         if(myConfig.checkAll()) {
-            //Checksheet checksheet1 = new Checksheet(myConfig.getFileOne());
+            Checksheet checksheet1 = new Checksheet(myConfig.getFileOne(), myConfig);
         }
         else {
             System.out.println("\nAdditional configuration needed." +
@@ -12,8 +12,5 @@ public class App {
                     " or deleting the config file." +
                     " Check console output for info.");
         }
-
-        Checksheet checksheet1 = new Checksheet(myConfig.getFileOne(), myConfig);
-
     }
 }

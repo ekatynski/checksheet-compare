@@ -25,8 +25,8 @@ public class Category {
         this.features = new ArrayList<>();
         this.featureNames = new ArrayList<>();
         this.categoryName = sheet.getSheetName();
-        System.out.println(this.getCategoryName() + " has " +
-                this.rows + " rows.");
+        System.out.println(this.getCategoryName() + " in program " +
+                this.getProgramName() + " has " + this.rows + " rows.");
         this.setFeatures();
     }
 
@@ -34,13 +34,13 @@ public class Category {
     private void setFeatures() {
         String rowFeatureName;
         // start catalog at index of top row according to config file
-        for(int i = config.getRowStart() - 1; i <= this.rows; i++) {
+        for (int i = this.config.getRowStart() - 1; i <= this.rows; i++) {
             try {
                 // ensure row isn't null
-                if (sheet.getRow(i) != null){
+                if (this.sheet.getRow(i) != null){
                     // ensure cell isn't null
                     if (sheet.getRow(i).getCell(this.config.getColFeature() - 1) != null) {
-                        rowFeatureName = (String) sheet.getRow(i).getCell(this.config.getColFeature() - 1).toString();
+                        rowFeatureName = (String) this.sheet.getRow(i).getCell(this.config.getColFeature() - 1).toString();
                         // check to see if feature is already being tracked or if the cell is blank
                         if ((!featureNames.contains(rowFeatureName)) && (!rowFeatureName.isEmpty())) {
                             featureNames.add(rowFeatureName);
@@ -62,7 +62,19 @@ public class Category {
     }
 
     public String getProgramName() {
-        return ("Program");
+        String program = "";
+        if (this.sheet.getRow(this.config.getPlatformRow() - 1) != null) {
+            if (this.sheet.getRow(this.config.getPlatformRow() - 1).getCell(this.config.getPlatformCol() - 1) != null) {
+                program = this.sheet.getRow(this.config.getPlatformRow() - 1).getCell(this.config.getPlatformCol() - 1).toString();
+            }
+            else {
+                System.out.println("Missing program info, check sheet " + this.getCategoryName() + ".");
+            }
+        }
+        else {
+            System.out.println("Missing program info, check sheet " + this.getCategoryName() + ".");
+        }
+        return(program);
     }
 
 }
