@@ -29,10 +29,10 @@ public class Checksheet {
 
         // confirm file is open
         if (file.isFile() && file.exists()) {
-            System.out.println("Opened " + fileName);
+            System.out.println("\nOpened " + fileName);
         }
         else {
-            System.out.println("Could not open file " + fileName);
+            System.out.println("\nCould not open file " + fileName);
         }
 
         try {
@@ -45,16 +45,24 @@ public class Checksheet {
             e.printStackTrace();
         }
 
-        // open sheets from workbook
-        sheets = new ArrayList<XSSFSheet>();
-        sheets.add(wb.getSheetAt(0));
+        if (wb.getNumberOfSheets() < (this.config.getLeadingSheets() + this.config.getSheetCount())) {
+            System.out.print("Checksheet " + file.getName() + " has insufficient sheet count." +
+                    " Verify that this checksheet is properly formatted.");
+        }
+        else {
+            System.out.println("Importing pages from checksheet.");
 
-        // open category array
-        categories = new ArrayList<Category>();
+            // open sheets from workbook
+            sheets = new ArrayList<XSSFSheet>();
 
-        // construct categories using loaded sheets from checksheet
-        for (int i = 0; i < sheets.size(); i++) {
-            categories.add(new Category(sheets.get(i), config));
+            // open category array
+            categories = new ArrayList<Category>();
+
+            // construct categories using loaded sheets from checksheet
+            for (int i = 0; i < this.config.getSheetCount(); i++) {
+                sheets.add(wb.getSheetAt(this.config.getLeadingSheets() + i));
+                categories.add(new Category(sheets.get(i), config));
+            }
         }
     }
 

@@ -25,7 +25,7 @@ public class Category {
         this.features = new ArrayList<>();
         this.featureNames = new ArrayList<>();
         this.categoryName = sheet.getSheetName();
-        System.out.println(this.getCategoryName() + " in program " +
+        System.out.println("\n" + this.getCategoryName() + " in program " +
                 this.getProgramName() + " has " + this.rows + " rows.");
         this.setFeatures();
     }
@@ -40,7 +40,7 @@ public class Category {
                 if (this.sheet.getRow(i) != null){
                     // ensure cell isn't null
                     if (sheet.getRow(i).getCell(this.config.getColFeature() - 1) != null) {
-                        rowFeatureName = (String) this.sheet.getRow(i).getCell(this.config.getColFeature() - 1).toString();
+                        rowFeatureName = this.sheet.getRow(i).getCell(this.config.getColFeature() - 1).toString();
                         // check to see if feature is already being tracked or if the cell is blank
                         if ((!featureNames.contains(rowFeatureName)) && (!rowFeatureName.isEmpty())) {
                             featureNames.add(rowFeatureName);

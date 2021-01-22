@@ -68,7 +68,6 @@ public class Configurator {
         this.exeCheck();
 
         // check to ensure exactly two checksheets are present
-        System.out.println("");
         ready = (ready && this.fileCheck());
 
         return (ready);
@@ -263,7 +262,7 @@ public class Configurator {
         // list located files
         System.out.println("Located files: ");
         if (fileCount == 2) {
-            System.out.println(this.getFileOne() + "\n" + this.getFileTwo() + "\n");
+            System.out.println(this.getFileOne() + "\n" + this.getFileTwo());
         }
         else if (fileCount >= 0 && fileCount != 2) {
             for (int i = 0; i < pathnames.length; i++) {

@@ -5,6 +5,7 @@ public class App {
         Configurator myConfig = new Configurator();
         if(myConfig.checkAll()) {
             Checksheet checksheet1 = new Checksheet(myConfig.getFileOne(), myConfig);
+            Checksheet checksheet2 = new Checksheet(myConfig.getFileTwo(), myConfig);
         }
         else {
             System.out.println("\nAdditional configuration needed." +
