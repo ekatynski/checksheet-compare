@@ -263,7 +263,7 @@ public class Configurator {
         // list located files
         System.out.println("Located files: ");
         if (fileCount == 2) {
-            System.out.println(this.getFileOne() + "\n" + this.getFileTwo());
+            System.out.println(this.getFileOne() + "\n" + this.getFileTwo() + "\n");
         }
         else if (fileCount >= 0 && fileCount != 2) {
             for (int i = 0; i < pathnames.length; i++) {
