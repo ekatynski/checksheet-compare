@@ -1,5 +1,6 @@
 package com.hatci.ccs;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
@@ -33,11 +34,20 @@ public class Category {
     private void setFeatures() {
         String rowFeatureName;
         for(int i = 0; i < this.rows; i++) {
-            rowFeatureName = (String) sheet.getRow(i).getCell(0).toString();
-            // check to see if feature is already being tracked
-            if (!featureNames.contains(rowFeatureName)) {
-                featureNames.add(rowFeatureName);
-                System.out.println("Added feature: " + rowFeatureName);
+            try {
+                if (sheet.getRow(i) != null){
+                    if (sheet.getRow(i).getCell(0) != null) {
+                        rowFeatureName = (String) sheet.getRow(i).getCell(0).toString();
+                        // check to see if feature is already being tracked
+                        if (!featureNames.contains(rowFeatureName)) {
+                            featureNames.add(rowFeatureName);
+                            System.out.println("Added feature: " + rowFeatureName);
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
