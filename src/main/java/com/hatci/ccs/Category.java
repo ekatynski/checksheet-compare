@@ -21,7 +21,7 @@ public class Category {
     Category(XSSFSheet sheet, Configurator config) {
         this.config = config;
         this.sheet = sheet;
-        this.rows = sheet.getPhysicalNumberOfRows();
+        this.rows = sheet.getLastRowNum();
         this.features = new ArrayList<>();
         this.featureNames = new ArrayList<>();
         this.categoryName = sheet.getSheetName();
@@ -33,13 +33,16 @@ public class Category {
     // scrape checksheet tab for feature names
     private void setFeatures() {
         String rowFeatureName;
-        for(int i = 0; i < this.rows; i++) {
+        // start catalog at index of top row according to config file
+        for(int i = config.getRowStart() - 1; i <= this.rows; i++) {
             try {
+                // ensure row isn't null
                 if (sheet.getRow(i) != null){
-                    if (sheet.getRow(i).getCell(0) != null) {
-                        rowFeatureName = (String) sheet.getRow(i).getCell(0).toString();
-                        // check to see if feature is already being tracked
-                        if (!featureNames.contains(rowFeatureName)) {
+                    // ensure cell isn't null
+                    if (sheet.getRow(i).getCell(this.config.getColFeature() - 1) != null) {
+                        rowFeatureName = (String) sheet.getRow(i).getCell(this.config.getColFeature() - 1).toString();
+                        // check to see if feature is already being tracked or if the cell is blank
+                        if ((!featureNames.contains(rowFeatureName)) && (!rowFeatureName.isEmpty())) {
                             featureNames.add(rowFeatureName);
                             System.out.println("Added feature: " + rowFeatureName);
                         }

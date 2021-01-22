@@ -32,7 +32,7 @@ public class Configurator {
         // default configuration file values
         this.colCan = 8;
         this.colCategory = 15;
-        this.colFeature = 3;
+        this.colFeature = 2;
         this.colTestCase = 14;
         this.colUs = 7;
         this.format = ".xlsx";
@@ -129,8 +129,8 @@ public class Configurator {
             // export default config settings to config file
             configFile.write("{\n" +
                     " \"colCan\": 8,\n" +
-                    " \"colCategory\": 8,\n" +
-                    " \"colFeature\": 15,\n" +
+                    " \"colCategory\": 15,\n" +
+                    " \"colFeature\": 2,\n" +
                     " \"colTestCase\": 14,\n" +
                     " \"colUs\": 7,\n" +
                     " \"format\": \".xlsx\",\n" +
