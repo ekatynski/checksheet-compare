@@ -12,24 +12,38 @@ public class Configurator {
     private String fileOne;
     private String fileTwo;
 
-    // default configuration file values
-    private int colCan = 8;
-    private int colCategory = 15;
-    private int colFeature = 3;
-    private int colTestCase = 14;
-    private int colUs = 7;
-    private String format = ".xslx";
-    private boolean includeInvalid = false;
-    private boolean includeOther = false;
-    private int leadingSheets = 2;
-    private int platformCol = 3;
-    private int platformRow = 3;
-    private int platformSheet = leadingSheets + 1;
-    private int rowStart = 17;
-    private int sheetCount = 9;
+    // configuration file settings
+    private int colCan;
+    private int colCategory;
+    private int colFeature;
+    private int colTestCase;
+    private int colUs;
+    private String format;
+    private boolean includeInvalid;
+    private boolean includeOther;
+    private int leadingSheets;
+    private int platformCol;
+    private int platformRow;
+    private int platformSheet;
+    private int rowStart;
+    private int sheetCount;
 
     public Configurator() {
-
+        // default configuration file values
+        this.colCan = 8;
+        this.colCategory = 15;
+        this.colFeature = 3;
+        this.colTestCase = 14;
+        this.colUs = 7;
+        this.format = ".xlsx";
+        this.includeInvalid = false;
+        this.includeOther = false;
+        this.leadingSheets = 2;
+        this.platformCol = 3;
+        this.platformRow = 3;
+        this.platformSheet = leadingSheets + 1;
+        this.rowStart = 17;
+        this.sheetCount = 9;
     }
 
     public boolean checkAll() {
@@ -37,10 +51,12 @@ public class Configurator {
         System.out.println("");
         // ensures all regular use directories are present
         // contains config.json file, checksheets for input, and chart output respectively
-        ready = (ready && this.directoryCheck("config")
-                && this.directoryCheck("input")
-                && this.directoryCheck("output")
-        );
+//        ready = (ready && this.directoryCheck("config"));
+//        ready = (ready && this.directoryCheck("input"));
+//        ready = (ready && this.directoryCheck("output"));
+        this.directoryCheck("config");
+        this.directoryCheck("input");
+        this.directoryCheck("output");
 
         // searches for config file to set up app before checksheet compare begins
         if (!this.configFileCheck()) {
@@ -58,7 +74,7 @@ public class Configurator {
         return (ready);
     }
 
-    private boolean directoryCheck(String dirName) {
+    private void directoryCheck(String dirName) {
         // check if searched directory exists
         boolean ready = true;
         File checkDir = new File("../" + dirName);
@@ -76,7 +92,7 @@ public class Configurator {
             System.out.println(dirName.substring(0, 1).toUpperCase()
                     + dirName.substring(1) + " directory found.");
         }
-        return (ready);
+        //return (ready);
     }
 
     private boolean configFileCheck() {
@@ -126,7 +142,7 @@ public class Configurator {
                     "\t\"row\": 3,\n" +
                     "\t\"sheet\": 3\n" +
                     " },\n" +
-                    " \"rowStart\": 17\n" +
+                    " \"rowStart\": 17,\n" +
                     " \"sheetCount\": 9\n" +
                     "}");
             configFile.close();
@@ -165,11 +181,14 @@ public class Configurator {
         catch  (Exception e) {
             e.printStackTrace();
         }
-        // alert user if file format incorrect
-        if ((this.getFormat() != ".xlsx") && (this.getFormat() != ".xlsm")) {
-            System.out.println("\nWarning: input files are not in default .xlsx or .xlsm formats," +
+        /*// alert user if file format incorrect
+        if ((this.getFormat() != (String) ".xlsx") && (this.getFormat() != (String) ".xlsm")) {
+            System.out.println("\nWarning: input file format specified in config file" +
+                    " is not default .xlsx or .xlsm formats," +
                     " program failure likely.");
-        }
+            System.out.println(this.getFormat() == ".xlsx");
+            System.out.println("Current format: " + this.getFormat());
+        }*/
     }
 
     private void exeCheck() {
