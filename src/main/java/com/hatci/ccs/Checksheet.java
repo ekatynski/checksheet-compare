@@ -4,16 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-import org.apache.poi.ss.extractor.ExcelExtractor;
-import org.apache.poi.xssf.usermodel.XSSFShape;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Checksheet {
 
-    private int rows;
-    private int cols;
-
+    private Configurator config;
     private String fileName;
     private File file;
     private FileInputStream fis;
@@ -28,6 +24,7 @@ public class Checksheet {
     Checksheet(String fileName, Configurator config) {
         // open checksheet file
         this.fileName = fileName;
+        this.config = config;
         file = new File("../input/" + fileName);
 
         // confirm file is open
@@ -57,7 +54,7 @@ public class Checksheet {
 
         // construct categories using loaded sheets from checksheet
         for (int i = 0; i < sheets.size(); i++) {
-            categories.add(new Category(sheets.get(i)));
+            categories.add(new Category(sheets.get(i), config));
         }
     }
 
