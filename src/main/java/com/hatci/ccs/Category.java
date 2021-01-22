@@ -21,24 +21,27 @@ public class Category {
         this.config = config;
         this.sheet = sheet;
         this.rows = sheet.getPhysicalNumberOfRows();
+        this.features = new ArrayList<>();
+        this.featureNames = new ArrayList<>();
         this.categoryName = sheet.getSheetName();
         System.out.println(this.getCategoryName() + " has " +
                 this.rows + " rows.");
-//        this.setFeatures();
+        this.setFeatures();
     }
 
-
     // scrape checksheet tab for feature names
-//    private void setFeatures() {
-//        for(int i = 0; i < this.rows; i++) {
-//            System.out.println(sheet.getRow(i).getCell(0));
-//            // check to see if feature is already being tracked
-//            if (!featureNames.contains(sheet.getRow(i).getCell(0))) {
-//                //featureNames.add(sheet.getRow(i).getCell(0));
-//            }
-//        }
-//
-//    }
+    private void setFeatures() {
+        String rowFeatureName;
+        for(int i = 0; i < this.rows; i++) {
+            rowFeatureName = (String) sheet.getRow(i).getCell(0).toString();
+            // check to see if feature is already being tracked
+            if (!featureNames.contains(rowFeatureName)) {
+                featureNames.add(rowFeatureName);
+                System.out.println("Added feature: " + rowFeatureName);
+            }
+        }
+
+    }
 
     // get category name of current sheet
     public String getCategoryName() {
