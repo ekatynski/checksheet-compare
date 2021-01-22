@@ -30,8 +30,7 @@ public class Checksheet {
         // confirm file is open
         if (file.isFile() && file.exists()) {
             System.out.println("\nOpened " + fileName);
-        }
-        else {
+        } else {
             System.out.println("\nCould not open file " + fileName);
         }
 
@@ -40,31 +39,31 @@ public class Checksheet {
             fis = new FileInputStream(file);
             // open workbook from file input stream
             wb = new XSSFWorkbook(fis);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (wb.getNumberOfSheets() < (this.config.getLeadingSheets() + this.config.getSheetCount())) {
             System.out.print("Checksheet " + file.getName() + " has insufficient sheet count." +
                     " Verify that this checksheet is properly formatted.");
-        }
-        else {
-            System.out.println("Importing pages from checksheet.");
-
-            // open sheets from workbook
-            sheets = new ArrayList<XSSFSheet>();
-
-            // open category array
-            categories = new ArrayList<Category>();
-
-            // construct categories using loaded sheets from checksheet
-            for (int i = 0; i < this.config.getSheetCount(); i++) {
-                sheets.add(wb.getSheetAt(this.config.getLeadingSheets() + i));
-                categories.add(new Category(sheets.get(i), config));
-            }
+        } else {
+            this.scrapePages();
         }
     }
 
+    private void scrapePages() {
+        System.out.println("Importing pages from checksheet.");
 
+        // open sheets from workbook
+        sheets = new ArrayList<XSSFSheet>();
+
+        // open category array
+        categories = new ArrayList<Category>();
+
+        // construct categories using loaded sheets from checksheet
+        for (int i = 0; i < this.config.getSheetCount(); i++) {
+            sheets.add(wb.getSheetAt(this.config.getLeadingSheets() + i));
+            categories.add(new Category(sheets.get(i), config));
+        }
+    }
 }
