@@ -14,7 +14,8 @@ public class App {
         }
         else {
             System.out.println("Additional configuration needed." +
-                    " Try re-running the program. Check console output for info.");
+                    " Try re-running the program or deleting the config file." +
+                    " Check console output for info.");
         }
     }
 }

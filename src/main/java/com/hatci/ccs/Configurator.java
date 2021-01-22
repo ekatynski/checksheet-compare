@@ -103,6 +103,7 @@ public class Configurator {
         else {
             System.out.println("Config file found.");
         }
+
         return configCreated;
     }
 
@@ -163,6 +164,11 @@ public class Configurator {
         }
         catch  (Exception e) {
             e.printStackTrace();
+        }
+        // alert user if file format incorrect
+        if ((this.getFormat() != ".xlsx") && (this.getFormat() != ".xlsm")) {
+            System.out.println("\nWarning: input files are not in default .xlsx or .xlsm formats," +
+                    " program failure likely.");
         }
     }
 
