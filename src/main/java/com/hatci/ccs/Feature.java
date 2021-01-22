@@ -2,28 +2,30 @@ package com.hatci.ccs;
 
 public class Feature {
     private String name;
-    private int sheet;  // refers to category/checksheet page of said feature
-    CaseCount usTally = new CaseCount();
-    CaseCount canTally = new CaseCount();
+    private int sheetIndex;  // refers to category/checksheet page of said feature
+    private CaseCount usTally;
+    private CaseCount canTally;
 
-    public Feature(String name, int sheet) {
+    public Feature(String name, int sheetIndex) {
         this.name = name;
-        this.sheet = sheet;
+        this.sheetIndex = sheetIndex;
+        CaseCount usTally = new CaseCount();
+        CaseCount canTally = new CaseCount();
     }
 
     public String getName() {
         return this.name;
     }
 
-    public int getSheet() {
-        return this.sheet;
+    public int getSheetIndex() {
+        return this.sheetIndex;
     }
 
     public String toString() {
-        return ("\nUS: " + this.name + " (sheet " + this.sheet + ")\n"
+        return ("\nUS: " + this.name + " (sheet " + this.sheetIndex + ")\n"
                 + "-----------------\n"
                 + usTally.toString()
-                + "\nCAN: " + this.name + " (sheet " + this.sheet + ")\n"
+                + "\nCAN: " + this.name + " (sheet " + this.sheetIndex + ")\n"
                 + "-----------------\n"
                 + canTally.toString()
         );
