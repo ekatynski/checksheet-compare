@@ -28,8 +28,31 @@ public class CaseCounter {
     }
 
     public void processCase(String result) {
+        // tally test case result count according to cell value
         switch (result.toUpperCase()) {
-
+            case "PASS":
+                this.incPass();
+                break;
+            case "FAIL":
+                this.incFail();
+                break;
+            case "N/A":
+                this.incNA();
+                break;
+            case "NOT TESTED":
+                this.incNotTested();
+                break;
+            case "BLOCKED":
+                this.incBlocked();
+                break;
+            case "SINGLE":
+                this.incSingle();
+                break;
+            case "INVALID":
+                this.incInvalid();
+                break;
+            default:
+                this.incOther();
         }
     }
 
