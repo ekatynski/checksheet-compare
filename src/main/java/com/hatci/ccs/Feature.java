@@ -6,7 +6,7 @@ public class Feature {
     private CaseCounter usTally = new CaseCounter();
     private CaseCounter canTally = new CaseCounter();
 
-    public Feature(String name) {
+    public Feature(String name, int sheetIndex) {
         this.name = name;
         this.sheetIndex = sheetIndex;
     }
