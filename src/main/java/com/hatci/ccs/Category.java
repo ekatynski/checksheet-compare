@@ -76,8 +76,8 @@ public class Category {
     private void setOutcomes(Feature currentFeature, int i) {
         boolean invalid = false;
         //pull US/CAN test case results per row
-        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()).toString();
-        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()).toString();
+        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()-1).toString();
+        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()-1).toString();
 
         // check if case is invalid
         if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1) != null) {
