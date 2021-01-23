@@ -76,29 +76,31 @@ public class Category {
     private void setOutcomes(Feature currentFeature, int i) {
         boolean invalid = false;
         //pull US/CAN test case results per row
-        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()-1).toString();
-        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()-1).toString();
+        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()-1).toString().toUpperCase();
+        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()-1).toString().toUpperCase();
 
-        // check if case is invalid
-        if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1) == null) {
-            System.out.println("Nullcell!");
-            if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1).toString().toUpperCase() == "INVALID" ) {
+        // check if case is invalid -- BROKEN
+        if (this.sheet.getRow(i).getCell(13) != null) {
+            if (this.sheet.getRow(i).getCell(13).toString().toUpperCase() == "INVALID" ) {
+                System.out.println("Invalid case detected.");
                 invalid = true;
             }
         }
 
-        if (this.sheet.getRow(i).getCell(this.config.getColTestCase() - 1) == null) {
-            System.out.println("Nullcell!");
-            if (this.sheet.getRow(i).getCell(this.config.getColTestCase() - 1).toString().toUpperCase() == "INVALID" ) {
+        if (this.sheet.getRow(i).getCell(14) != null) {
+            if (this.sheet.getRow(i).getCell(14).toString().toUpperCase() == "INVALID" ) {
+                System.out.println("Invalid case detected.");
                 invalid = true;
             }
         }
 
         // invalidate invalid test cases
         if (invalid) {
-            usResult = "invalid";
-            canResult = "invalid";
+            usResult = "INVALID";
+            canResult = "INVALID";
         }
+
+        System.out.println(this.sheet.getRow(i).getCell(14).toString().toUpperCase());
 
         // process test results
         currentFeature.processUsCase(usResult);
