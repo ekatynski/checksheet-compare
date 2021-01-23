@@ -3,14 +3,12 @@ package com.hatci.ccs;
 public class Feature {
     private String name;
     private int sheetIndex;  // refers to category/checksheet page of said feature
-    private CaseCount usTally;
-    private CaseCount canTally;
+    private CaseCounter usTally = new CaseCounter();
+    private CaseCounter canTally = new CaseCounter();
 
-    public Feature(String name, int sheetIndex) {
+    public Feature(String name) {
         this.name = name;
         this.sheetIndex = sheetIndex;
-        CaseCount usTally = new CaseCount();
-        CaseCount canTally = new CaseCount();
     }
 
     public String getName() {
@@ -29,5 +27,13 @@ public class Feature {
                 + "-----------------\n"
                 + canTally.toString()
         );
+    }
+
+    public void processUsCase(String result) {
+        this.usTally.processCase(result);
+    }
+
+    public void processCanCase(String result) {
+        this.canTally.processCase(result);
     }
 }

@@ -1,6 +1,6 @@
 package com.hatci.ccs;
 
-public class CaseCount {
+public class CaseCounter {
 
     // tally for each test case type per relevant feature
     private int total;      // total includes tested and not tested
@@ -14,7 +14,7 @@ public class CaseCount {
     private int invalid;    // for cases marked "invalid" in Test Case Type/Category
     private int other;      // for cases mismarked in the result column
 
-    public CaseCount() {
+    public CaseCounter() {
         this.total = 0;
         this.tested = 0;
         this.pass = 0;
@@ -25,6 +25,12 @@ public class CaseCount {
         this.single = 0;
         this.invalid = 0;
         this.other = 0;
+    }
+
+    public void processCase(String result) {
+        switch (result.toUpperCase()) {
+
+        }
     }
 
     public void incTotal() {
