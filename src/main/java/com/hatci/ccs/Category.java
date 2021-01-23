@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class Category {
 
+    private int sheetNum;
     private int rows;
     private Configurator config = null;
     private XSSFSheet sheet = null;
@@ -18,9 +19,10 @@ public class Category {
 
     }
 
-    Category(XSSFSheet sheet, Configurator config) {
+    Category(XSSFSheet sheet, Configurator config, int sheetNum) {
         this.config = config;
         this.sheet = sheet;
+        this.sheetNum = sheetNum;
         this.rows = sheet.getLastRowNum();
         this.features = new ArrayList<>();
         this.featureNames = new ArrayList<>();
@@ -28,6 +30,7 @@ public class Category {
         System.out.println("\n" + this.getCategoryName() + " in program " +
                 this.getProgramName() + " has " + this.rows + " rows.");
         this.setFeatures();
+        System.out.println(this.toString());
     }
 
     // scrape checksheet tab for feature names
@@ -47,7 +50,7 @@ public class Category {
                             // log feature name
                             this.featureNames.add(rowFeatureName);
                             // log feature
-                            this.features.add(new Feature(rowFeatureName));
+                            this.features.add(new Feature(rowFeatureName, this.sheetNum));
                             System.out.println("Added feature: " + rowFeatureName);
                         }
                     }
@@ -73,17 +76,19 @@ public class Category {
     private void setOutcomes(Feature currentFeature, int i) {
         boolean invalid = false;
         //pull US/CAN test case results per row
-        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()).toString();
-        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()).toString();
+        String usResult = this.sheet.getRow(i).getCell(this.config.getColUs()-1).toString();
+        String canResult = this.sheet.getRow(i).getCell(this.config.getColCan()-1).toString();
 
         // check if case is invalid
-        if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1) != null) {
+        if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1) == null) {
+            System.out.println("Nullcell!");
             if (this.sheet.getRow(i).getCell(this.config.getColCategory() - 1).toString().toUpperCase() == "INVALID" ) {
                 invalid = true;
             }
         }
 
-        if (this.sheet.getRow(i).getCell(this.config.getColTestCase() - 1) != null) {
+        if (this.sheet.getRow(i).getCell(this.config.getColTestCase() - 1) == null) {
+            System.out.println("Nullcell!");
             if (this.sheet.getRow(i).getCell(this.config.getColTestCase() - 1).toString().toUpperCase() == "INVALID" ) {
                 invalid = true;
             }
@@ -91,14 +96,14 @@ public class Category {
 
         // invalidate invalid test cases
         if (invalid) {
-            currentFeature.processUsCase("invalid");
-            currentFeature.processCanCase("invalid");
+            usResult = "invalid";
+            canResult = "invalid";
         }
-        // process the valid ones
-        else {
-            currentFeature.processUsCase(usResult);
-            currentFeature.processCanCase(canResult);
-        }
+
+        // process test results
+        currentFeature.processUsCase(usResult);
+        currentFeature.processCanCase(canResult);
+
     }
 
     // get category name of current sheet
@@ -122,4 +127,14 @@ public class Category {
         return(program);
     }
 
+    public String toString() {
+        String output = ("Category: " + this.getCategoryName() + "\n");
+
+        for (int i = 0; i < this.features.size(); i++) {
+            output += features.get(i).toString();
+        }
+
+        output += "\n";
+        return(output);
+    }
 }

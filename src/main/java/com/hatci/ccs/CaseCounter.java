@@ -92,6 +92,7 @@ public class CaseCounter {
     public void incSingle() {
         this.single++;
         this.incTested();
+        // are single cases considered "tested"?
     }
 
     public void incInvalid() {

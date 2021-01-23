@@ -63,7 +63,7 @@ public class Checksheet {
         // construct categories using loaded sheets from checksheet
         for (int i = 0; i < this.config.getSheetCount(); i++) {
             sheets.add(wb.getSheetAt(this.config.getLeadingSheets() + i));
-            categories.add(new Category(sheets.get(i), config));
+            categories.add(new Category(sheets.get(i), config, i));
         }
     }
 }
