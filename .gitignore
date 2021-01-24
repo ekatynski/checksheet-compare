@@ -1,0 +1,21 @@
+// compiling is easy
+.classpath
+
+// 
+.gradle/
+
+// useless Intellij stuff
+.idea/
+
+// unnecessary project files
+.project
+.settings/
+
+
+bin/
+
+// can rebuild elsewhere if I have 
+build/
+
+// testing artiface
+checksheet-compare.bat
