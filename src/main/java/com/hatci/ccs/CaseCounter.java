@@ -95,6 +95,12 @@ public class CaseCounter {
         // are single cases considered "tested"?
     }
 
+    public int[] getArray() {
+        int[] output = {this.total, this.tested, this.pass, this.fail, this.na,
+        this.notTested, this.blocked, this.single, this.invalid, this.other};
+        return(output);
+    }
+
     public void incInvalid() {
         this.invalid++;
     }

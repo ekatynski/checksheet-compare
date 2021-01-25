@@ -16,6 +16,7 @@ public class Checksheet {
     private XSSFWorkbook wb;
     private ArrayList<XSSFSheet> sheets = null;
     private ArrayList<Category> categories = null;
+    private ArrayList<String> categoryNames = null;
 
     Checksheet() {
 
@@ -45,12 +46,13 @@ public class Checksheet {
 
         if (wb.getNumberOfSheets() < (this.config.getLeadingSheets() + this.config.getSheetCount())) {
             System.out.print("Checksheet " + file.getName() + " has insufficient sheet count." +
-                    " Verify that this checksheet is properly formatted.");
+                    " Verify that this checksheet is properly formatted.\n");
         } else {
             this.scrapePages();
         }
     }
 
+    // retrieve checksheet pages as XSSFSheets
     private void scrapePages() {
         System.out.println("Importing pages from checksheet.");
 
@@ -65,5 +67,17 @@ public class Checksheet {
             sheets.add(wb.getSheetAt(this.config.getLeadingSheets() + i));
             categories.add(new Category(sheets.get(i), config, i));
         }
+    }
+
+    // compile a category name list
+    public ArrayList<String> getCategoryNames() {
+      for (int i = 0; i < categories.size(); i++) {
+        categoryNames.add(categories.get(i).getCategoryName());
+      }
+      return (categoryNames);
+    }
+
+    public ArrayList<Category> getCategories() {
+        return this.categories;
     }
 }
