@@ -137,7 +137,7 @@ public class Category {
     }
 
     // return a feature name list
-    private ArrayList<String> getFeatureNames() {
+    public ArrayList<String> getFeatureNames() {
         return (this.featureNames);
     }
 }
