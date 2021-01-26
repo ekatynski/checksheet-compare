@@ -91,8 +91,14 @@ public class CaseCounter {
 
     public void incSingle() {
         this.single++;
-        this.incTested();
-        // are single cases considered "tested"?
+        //this.incTested();
+        // uncomment line to count single as tested
+    }
+
+    public int[] getArray() {
+        int[] output = {this.total, this.tested, this.pass, this.fail, this.na,
+        this.notTested, this.blocked, this.single, this.invalid, this.other};
+        return(output);
     }
 
     public void incInvalid() {
