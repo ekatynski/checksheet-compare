@@ -35,29 +35,40 @@ public class Chart {
         // matrix is double-wide to contain both American and Canadian results
         testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
 
+
         commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
         // iterate through all categories in common category list
+        System.out.println("Failure checkpoint 1");
         for(int i = 0; i < config.getSheetCount(); i++) {
             // check that this checksheet contains said category
+            System.out.println("Failure checkpoint 2");
             if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
+                System.out.println("Failure checkpoint 3");
                 // calculate the checksheet category list index corresponding to current master list category
                 int sheetCategoryIndex = sheet.getCategoryNames().indexOf(commonCatsAndFeatures.getAllCategories().get(i));
                 // iterate through all features in common category list
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
+                    System.out.println("Failure checkpoint 4");
                     // if feature set for current checksheet category contains a common-list feature
                     if(sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j))) {
+                        System.out.println("Failure checkpoint 5");
                         // valid category contains a valid feature - populate results
                         // calculate the category feature list index corresponding to current master list feature
                         int categoryFeatureIndex = sheet.getCategories().get(sheetCategoryIndex).getFeatureNames().indexOf(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j));
                         // US
                         for(int k = 0; k < width; k++) {
+                            System.out.println("Failure checkpoint 6");
                             // copy test case results from US CaseCounter within current feature within current category
+                            // ERROR HERE
                             testCaseResults[listedFeatures + j][k] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getUsResults()[k];
+                            System.out.println("Failure checkpoint 6.5");
                         }
                         // CAN -- offset to other half of Matrix (indices 10 and above)
                         for(int k = 0; k < width; k++) {
+                            System.out.println("Failure checkpoint 7");
+                            // LIKELY SUBSEQUENT ERROR HERE
                             testCaseResults[listedFeatures + j][k + width] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getCanResults()[k];
                         }
                     }
@@ -99,15 +110,16 @@ public class Chart {
         int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
+        System.out.println("FEATURE:\tRESULT, CHARTONE, CHARTTWO");
         for(int i = 0; i < resultsOne.length; i++) {
-            // iterate through each column in the current row
+
             for(int j = 0; j < resultsOne[0].length; j++) {
                 // comparison chart results are determined subtractively
                 this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
+                System.out.print(testCaseResults[i][j] + "," + resultsOne[i][j] + "," + resultsTwo[i][j] + "\t");
             }
+            System.out.println("");
         }
-
-        System.out.println(this);
     }
 
 
