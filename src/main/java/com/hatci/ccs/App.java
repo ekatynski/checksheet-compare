@@ -9,7 +9,8 @@ public class App {
             CategorySet commonCategories = new CategorySet(checksheet1, checksheet2);
             //System.out.println(commonCategories);
             Chart chart1 = new Chart(checksheet1, commonCategories, myConfig);
-            System.out.println(chart1);
+            //Chart chart2 = new Chart(checksheet2, commonCategories, myConfig);
+            //System.out.println(chart2);
         }
         else {
             System.out.println("\nAdditional configuration needed." +

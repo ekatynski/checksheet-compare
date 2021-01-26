@@ -10,32 +10,48 @@ public class CategorySet {
     private ArrayList<ArrayList<String>> totalFeatures = null;
     private ArrayList<ArrayList<String>> featuresOne = null;
     private ArrayList<ArrayList<String>> featuresTwo = null;
+    private int totalCategoryCount;
     private int totalFeatureCount;
 
     CategorySet(Checksheet sheetOne, Checksheet sheetTwo) {
         categoriesOne = sheetOne.getCategoryNames();
+        System.out.println("Categories One size: " + categoriesOne.size());
         categoriesTwo = sheetTwo.getCategoryNames();
+        System.out.println("Categories Two size: " + categoriesTwo.size());
+
+        // NOTE: DOING THIS WILL EXPLODE THE NUMBER OF FEATURES IN THIS CATEGORY
         totalCategories = categoriesOne;
         featuresOne = sheetOne.getAllFeatures();
         featuresTwo = sheetTwo.getAllFeatures();
         totalFeatures = new ArrayList();
+        totalFeatureCount = 0;
+        totalCategoryCount = 0;
 
         int inserts = 0;
 
         for(int i = 0; i < categoriesTwo.size(); i++) {
             // insert categories on sheet two missing from sheet one after last common category
             if (!totalCategories.contains(categoriesTwo.get(i))) {
+                System.out.println("Additional category needed.");
                 totalCategories.add(i + inserts, categoriesTwo.get(i));
                 inserts++;
+            }
+            else {
+                System.out.println("Redundant category.");
             }
         }
 
         compareFeaturesLists(sheetOne, sheetTwo);
 
+        System.out.println("Category list size after comparison: " + totalCategories.size());
+
         // count total number of features
         for(int i = 0; i < totalCategories.size(); i++) {
+            totalCategoryCount++;
             totalFeatureCount += totalFeatures.get(i).size();
         }
+        System.out.println("Category list size after count: " + totalCategories.size());
+        // CATEGORY DUPLICATION ERROR DOES NOT OCCUR IN CATEGORYSET CONSTRUCTOR?
     }
 
     public String toString() {
@@ -52,31 +68,32 @@ public class CategorySet {
 
     }
 
+    // compile a master feature list for each category
     private void compareFeaturesLists(Checksheet sheetOne, Checksheet sheetTwo) {
         // iterate through all categories
-        int inserts;
         for(int i = 0; i < totalCategories.size(); i++) {
-            inserts = 0;
-            // copy over first category feature list if present in joined list
+            // if first master list category is included in first checksheet, copy over all features
             if (categoriesOne.contains(totalCategories.get(i))) {
-                // add category feature arraylist from category corresponding to current master category list item
-                totalFeatures.add(sheetOne.getCategoryFeatures(categoriesOne.indexOf(totalCategories.get(i))));
-                // filter in non-redundant features from same category on checksheet two if present
+                System.out.println("Category overlap: " + totalCategories.get(i));
+                // add feature list of referenced category
+                totalFeatures.add(featuresOne.get(categoriesOne.indexOf(totalCategories.get(i))));
+                // if checklist two contains the same category
                 if (categoriesTwo.contains(totalCategories.get(i))) {
-                    // iterate through features in checklist two category feature list to find non-redundant features
+                    // iterate through all features for that category of checklist two
                     for(int j = 0; j < featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).size(); j++) {
-                        if (!totalFeatures.get(i).contains(featuresTwo.get(j))) {
-                            totalFeatures.get(i).add(j + inserts, featuresTwo.get(i).get(j));
-                            inserts++;
+                        // add any non-redundant features to the master feature-list for this category
+                        if (!totalFeatures.get(i).contains(featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).get(j))) {
+                            totalFeatures.get(i).add(featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).get(j));
                         }
                     }
                 }
             }
-            // if checklist one doesn't contain the category but checklist two does, copy its category feature list
-            else if (categoriesTwo.contains(totalCategories.get(i))) {
-                // add category feature arraylist from category corresponding to current master category list item
-                totalFeatures.add(sheetTwo.getCategoryFeatures(categoriesOne.indexOf(totalCategories.get(i))));
+            // if the first checksheet lacks this category but the second one has it, copy its corresponding features
+            else if (categoriesTwo.contains(totalCategories.get(i))){
+                System.out.println("Category overlap: " + totalCategories.get(i));
+                totalFeatures.add(featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))));
             }
+
         }
 
     }
@@ -90,6 +107,7 @@ public class CategorySet {
     }
 
     public int getFeatureCount(int i) {
+        //System.out.println("FeatureCount i: " + i);
       return totalFeatures.get(i).size();
     }
 
