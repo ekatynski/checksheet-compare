@@ -36,4 +36,12 @@ public class Feature {
     public void processCanCase(String result) {
         this.canTally.processCase(result);
     }
+
+    public int[] getUsResults() {
+        return this.usTally.getArray();
+    }
+
+    public int[] getCanResults() {
+        return this.canTally.getArray();
+    }
 }

@@ -135,4 +135,13 @@ public class Category {
         output += "\n";
         return(output);
     }
+
+    // return a feature name list
+    public ArrayList<String> getFeatureNames() {
+        return (this.featureNames);
+    }
+
+    public ArrayList<Feature> getFeatures() {
+        return this.features;
+    }
 }
