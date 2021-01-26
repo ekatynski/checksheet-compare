@@ -56,6 +56,9 @@ public class Checksheet {
                     " Verify that this checksheet is properly formatted.\n");
         } else {
             this.scrapePages();
+            for (int i = 0; i < categories.size(); i++) {
+              categoryNames.add(categories.get(i).getCategoryName());
+            }
         }
     }
 
@@ -71,9 +74,6 @@ public class Checksheet {
 
     // compile a category name list
     public ArrayList<String> getCategoryNames() {
-      for (int i = 0; i < categories.size(); i++) {
-        categoryNames.add(categories.get(i).getCategoryName());
-      }
       return (categoryNames);
     }
 

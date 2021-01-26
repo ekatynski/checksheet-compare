@@ -14,7 +14,6 @@ public class OutputSheet {
     private Chart comparisonChart = null;
 
     OutputSheet(Chart chartOne, Chart chartTwo) {
-        comparisonChart = new Chart(chartOne, chartTwo);
 
         wb = new XSSFWorkbook();
 

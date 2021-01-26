@@ -16,17 +16,13 @@ public class Chart {
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
         programName = sheet.getCategories().get(0).getProgramName();
+
+        // count features per category
         featureCounts = new int[commonCatsAndFeatures.getCategoryCount()];
-        System.out.println("Category count: " + categoryCount);
-        System.out.println("Feature count: " + featureCounts.length);
         for(int i = 0; i < categoryCount; i++) {
-            System.out.println("Initial feature count: " + i);
-            System.out.println("FeatureCount size: " + featureCounts.length);
             featureCounts[i] = commonCatsAndFeatures.getFeatureCount(i);
-            System.out.println("Crash?");
         }
 
-        System.out.println("Category count at width determination: " + categoryCount);
         // determine chart width depending on config settings include invalid/other cases or not
         width = 8;
         if ((config.getIncludeInvalid() == true) && (config.getIncludeOther() == true)) {
@@ -38,35 +34,14 @@ public class Chart {
 
         // matrix is double-wide to contain both American and Canadian results
         testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
-        System.out.println("Category count at result matrix construction: " + categoryCount);
-
-        // CHART CONSTRUCTOR MAKES IT THIS FAR WITHOUT CATEGORY DUPLICATION
-        System.out.println("DUPLICATION ERROR CHECKPOINT");
 
         commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
         // iterate through all categories in common category list
         for(int i = 0; i < config.getSheetCount(); i++) {
-            System.out.println("CategoryCount i: " + commonCatsAndFeatures.getCategoryCount());
-            // DUPLICATION ERROR CHECKPOINT 2
-            for(int cats = 0; cats < commonCatsAndFeatures.getAllCategories().size(); cats++) {
-                System.out.println(commonCatsAndFeatures.getAllCategories().get(cats));
-            }
-            //
             // check that this checksheet contains said category
-            System.out.println("CategoryCount 1.5i: " + commonCatsAndFeatures.getCategoryCount());
-
-            // THIS IS WHAT'S CAUSING MY ERROR
             if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
-                System.out.println("POSSIBLE ERROR");
-                System.out.println("CategoryCount 1.75i: " + commonCatsAndFeatures.getCategoryCount());
-            }
-
-
-                if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
-                System.out.println("Current category: " + commonCatsAndFeatures.getAllCategories().get(i));
-                System.out.println("CategoryCount 2i: " + commonCatsAndFeatures.getCategoryCount());
                 // calculate the checksheet category list index corresponding to current master list category
                 int sheetCategoryIndex = sheet.getCategoryNames().indexOf(commonCatsAndFeatures.getAllCategories().get(i));
                 // iterate through all features in common category list
@@ -98,7 +73,6 @@ public class Chart {
             else {
                 // no test cases for this category will exist; mark everything zero
                 // iterate through category features
-                System.out.println("Else case: " + i);
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
                     // iterate through all columns visible on finished chart
                     for(int k = 0; k < width; k++) {
@@ -107,32 +81,33 @@ public class Chart {
                 }
             }
             // track rows that are already populated
-            System.out.println("Single chart constructor i: " + i);
-
             listedFeatures += commonCatsAndFeatures.getFeatureCount(i);
         }
     }
 
-    public Chart(Chart chartOne, Chart chartTwo) {
+    public Chart(Chart chartOne, Chart chartTwo, CategorySet commonCatsAndFeatures) {
         // gather common test data
         this.currentSet = chartOne.getCategories();
         this.width = chartOne.width;
         this.featureCounts = chartOne.featureCounts;
         this.categoryCount = chartOne.categoryCount;
         this.programName = chartOne.getProgramName() + " / " + chartTwo.getProgramName() + " Comparison";
+        this.testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
 
         // import data from other charts
         int resultsOne[][] = chartOne.getTestResults();
         int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
-        for(int i = 0; i < resultsOne[0].length; i++) {
+        for(int i = 0; i < resultsOne.length; i++) {
             // iterate through each column in the current row
-            for(int j = 0; j < resultsOne.length; j++) {
+            for(int j = 0; j < resultsOne[0].length; j++) {
                 // comparison chart results are determined subtractively
                 this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
             }
         }
+
+        System.out.println(this);
     }
 
 
