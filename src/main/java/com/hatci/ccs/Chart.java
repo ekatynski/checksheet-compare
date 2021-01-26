@@ -10,11 +10,12 @@ public class Chart {
     private int width;
     private int categoryCount;
     private int[] featureCounts = null;
-
+    private String programName = null;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
+        programName = sheet.getCategories().get(0).getProgramName();
         featureCounts = new int[commonCatsAndFeatures.getCategoryCount()];
         for(int i = 0; i < categoryCount; i++) {
             featureCounts[i] = commonCatsAndFeatures.getFeatureCount(i);
@@ -86,6 +87,7 @@ public class Chart {
         this.width = sheetOne.width;
         this.featureCounts = sheetOne.featureCounts;
         this.categoryCount = sheetOne.categoryCount;
+        this.programName = sheetOne.getProgramName() + " / " + sheetTwo.getProgramName() + " Comparison";
 
         // import data from other charts
         int resultsOne[][] = sheetOne.getTestResults();
@@ -122,12 +124,8 @@ public class Chart {
         return categoryCount;
     }
 
-    private void formatSheet() {
-
-    }
-
-    private void populateSheet() {
-
+    private String getProgramName() {
+        return programName;
     }
 
     public String toString() {
