@@ -140,4 +140,8 @@ public class Category {
     public ArrayList<String> getFeatureNames() {
         return (this.featureNames);
     }
+
+    public ArrayList<Feature> getFeatures() {
+        return this.features;
+    }
 }

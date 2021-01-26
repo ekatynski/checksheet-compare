@@ -4,12 +4,13 @@ import java.util.ArrayList;
 
 public class CategorySet {
 
-    ArrayList<String> totalCategories = null;
-    ArrayList<String> categoriesOne = null;
-    ArrayList<String> categoriesTwo = null;
-    ArrayList<ArrayList<String>> totalFeatures = null;
-    ArrayList<ArrayList<String>> featuresOne = null;
-    ArrayList<ArrayList<String>> featuresTwo = null;
+    private ArrayList<String> totalCategories = null;
+    private ArrayList<String> categoriesOne = null;
+    private ArrayList<String> categoriesTwo = null;
+    private ArrayList<ArrayList<String>> totalFeatures = null;
+    private ArrayList<ArrayList<String>> featuresOne = null;
+    private ArrayList<ArrayList<String>> featuresTwo = null;
+    private int totalFeatureCount;
 
     CategorySet(Checksheet sheetOne, Checksheet sheetTwo) {
         categoriesOne = sheetOne.getCategoryNames();
@@ -30,6 +31,11 @@ public class CategorySet {
         }
 
         compareFeaturesLists(sheetOne, sheetTwo);
+
+        // count total number of features
+        for(int i = 0; i < totalCategories.size(); i++) {
+            totalFeatureCount += totalFeatures.get(i).size();
+        }
     }
 
     public String toString() {
@@ -42,6 +48,8 @@ public class CategorySet {
             }
         }
         return(output);
+
+
     }
 
     private void compareFeaturesLists(Checksheet sheetOne, Checksheet sheetTwo) {
@@ -75,5 +83,21 @@ public class CategorySet {
 
     public ArrayList<String> getAllCategories() {
         return totalCategories;
+    }
+
+    public int getCategoryCount() {
+        return totalCategories.size();
+    }
+
+    public int getFeatureCount(int i) {
+      return totalFeatures.get(i).size();
+    }
+
+    public int getTotalFeatureCount() {
+        return totalFeatureCount;
+    }
+
+    public ArrayList<ArrayList<String>> getTotalFeatureList() {
+      return totalFeatures;
     }
 }
