@@ -6,7 +6,6 @@ public class Chart {
     "NOT TESTED", "BLOCKED", "SINGLE", "INVALID", "OTHER"};
 
     private CategorySet currentSet = null;
-
     private int[][] testCaseResults = null;
     private int width;
     private int categoryCount;
@@ -36,7 +35,6 @@ public class Chart {
         int listedFeatures = 0;
         // iterate through all categories in common category list
         for(int i = 0; i < categoryCount; i++) {
-          System.out.println("I: " + i);
             // check that this checksheet contains said category
             if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
                 // calculate the checksheet category list index corresponding to current master list category
@@ -71,7 +69,6 @@ public class Chart {
                 // no test cases for this category will exist; mark everything zero
                 // iterate through category features
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
-                  System.out.println("EMPTY CASE COUNT: " + i);
                     // iterate through all columns visible on finished chart
                     for(int k = 0; k < width; k++) {
                         testCaseResults[listedFeatures + j][k] = 0;
@@ -81,6 +78,48 @@ public class Chart {
             // track rows that are already populated
             listedFeatures += commonCatsAndFeatures.getFeatureCount(i);
         }
+    }
+
+    public Chart(Chart sheetOne, Chart sheetTwo) {
+        // gather common test data
+        this.currentSet = sheetOne.getCategories();
+        this.width = sheetOne.width;
+        this.featureCounts = sheetOne.featureCounts;
+        this.categoryCount = sheetOne.categoryCount;
+
+        // import data from other charts
+        int resultsOne[][] = sheetOne.getTestResults();
+        int resultsTwo[][] = sheetTwo.getTestResults();
+
+        // iterate through the rows of the matrix
+        for(int i = 0; i < resultsOne[0].length; i++) {
+            // iterate through each column in the current row
+            for(int j = 0; j < resultsOne.length; j++) {
+                // comparison chart results are determined subtractively
+                this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
+            }
+        }
+    }
+
+
+    private CategorySet getCategories() {
+        return currentSet;
+    }
+
+    private int[] getFeatureCounts() {
+        return featureCounts;
+    }
+
+    private int[][] getTestResults() {
+        return testCaseResults;
+    }
+
+    private int getWidth() {
+        return width;
+    }
+
+    private int getCategoryCount() {
+        return categoryCount;
     }
 
     private void formatSheet() {
