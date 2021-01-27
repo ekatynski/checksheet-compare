@@ -2,9 +2,6 @@ package com.hatci.ccs;
 
 public class Chart {
 
-    private String[] resultType = {"TOTAL", "TESTED", "PASS", "FAIL", "N/A",
-    "NOT TESTED", "BLOCKED", "SINGLE", "INVALID", "OTHER"};
-
     private CategorySet currentSet = null;
     private int[][] testCaseResults = null;
     private int width;
@@ -145,23 +142,23 @@ public class Chart {
     }
 
 
-    private CategorySet getCategories() {
+    public CategorySet getCategories() {
         return currentSet;
     }
 
-    private int[] getFeatureCounts() {
+    public int[] getFeatureCounts() {
         return featureCounts;
     }
 
-    private int[][] getTestResults() {
+    public int[][] getTestResults() {
         return testCaseResults;
     }
 
-    private int getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    private int getCategoryCount() {
+    public int getCategoryCount() {
         return categoryCount;
     }
 
