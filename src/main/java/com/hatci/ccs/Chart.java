@@ -11,17 +11,24 @@ public class Chart {
     private int categoryCount;
     private int[] featureCounts = null;
     private String programName = null;
+    private int totalFeatureCount;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
+        totalFeatureCount = 0;
         programName = sheet.getCategories().get(0).getProgramName();
 
+        System.out.println("Feature count breakdown: ");
         // count features per category
         featureCounts = new int[commonCatsAndFeatures.getCategoryCount()];
         for(int i = 0; i < categoryCount; i++) {
             featureCounts[i] = commonCatsAndFeatures.getFeatureCount(i);
+            totalFeatureCount += featureCounts[i];
+            System.out.println(i + ":\t" + featureCounts[i]);
         }
+
+        System.out.println("Total number of features: " + totalFeatureCount);
 
         // determine chart width depending on config settings include invalid/other cases or not
         width = 8;
@@ -34,42 +41,48 @@ public class Chart {
 
         // matrix is double-wide to contain both American and Canadian results
         testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
+        System.out.println("Test Case Result Rows: " + testCaseResults.length);
+        System.out.println("Test Case Result Cols: " + testCaseResults[0].length);
+
 
 
         commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
         // iterate through all categories in common category list
-        System.out.println("Failure checkpoint 1");
         for(int i = 0; i < config.getSheetCount(); i++) {
             // check that this checksheet contains said category
-            System.out.println("Failure checkpoint 2");
             if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
-                System.out.println("Failure checkpoint 3");
                 // calculate the checksheet category list index corresponding to current master list category
                 int sheetCategoryIndex = sheet.getCategoryNames().indexOf(commonCatsAndFeatures.getAllCategories().get(i));
                 // iterate through all features in common category list
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
-                    System.out.println("Failure checkpoint 4");
                     // if feature set for current checksheet category contains a common-list feature
                     if(sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j))) {
-                        System.out.println("Failure checkpoint 5");
                         // valid category contains a valid feature - populate results
                         // calculate the category feature list index corresponding to current master list feature
                         int categoryFeatureIndex = sheet.getCategories().get(sheetCategoryIndex).getFeatureNames().indexOf(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j));
                         // US
+                        System.out.println("WIDTH: " + 2*width);
+                        System.out.println("Inserting feature: " + currentSet.getTotalFeatureList().get(i).get(j));
                         for(int k = 0; k < width; k++) {
-                            System.out.println("Failure checkpoint 6");
                             // copy test case results from US CaseCounter within current feature within current category
                             // ERROR HERE
+                            System.out.println("Index before: " + (listedFeatures + j));
+                            System.out.println("ROW: " + (listedFeatures + j) + "\tCOL: " + k);
+                            System.out.println("Sheet Category Index: " + sheetCategoryIndex);
+                            System.out.println("Sheet Category Size: " + sheet.getCategories().size());
+                            System.out.println("Category Feature Index: " + categoryFeatureIndex);
+                            System.out.println("Category Feature Size: " + sheet.getCategories().get(sheetCategoryIndex).getFeatures().size());
+                            // PROBLEM IN COUNTING ON SHEET TO HARBOR ALL RESULTS - categoryFeatureIndex is causing the issue!
                             testCaseResults[listedFeatures + j][k] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getUsResults()[k];
-                            System.out.println("Failure checkpoint 6.5");
+
+                            System.out.println("Index after: " + (listedFeatures + j));
                         }
                         // CAN -- offset to other half of Matrix (indices 10 and above)
                         for(int k = 0; k < width; k++) {
-                            System.out.println("Failure checkpoint 7");
                             // LIKELY SUBSEQUENT ERROR HERE
-                            testCaseResults[listedFeatures + j][k + width] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getCanResults()[k];
+                            //testCaseResults[listedFeatures + j][k + width] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getCanResults()[k];
                         }
                     }
                     else {
@@ -85,6 +98,8 @@ public class Chart {
                 // no test cases for this category will exist; mark everything zero
                 // iterate through category features
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
+
+
                     // iterate through all columns visible on finished chart
                     for(int k = 0; k < width; k++) {
                         testCaseResults[listedFeatures + j][k] = 0;
@@ -104,12 +119,16 @@ public class Chart {
         this.categoryCount = chartOne.categoryCount;
         this.programName = chartOne.getProgramName() + " / " + chartTwo.getProgramName() + " Comparison";
         this.testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
+        System.out.println("commonCatsAndFeatures feature count: " + commonCatsAndFeatures.getTotalFeatureCount());
 
         // import data from other charts
         int resultsOne[][] = chartOne.getTestResults();
         int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
+
+        System.out.println("CHART ROWS: ");
+        System.out.println("CHART COLUMNS: ");
         System.out.println("FEATURE:\tRESULT, CHARTONE, CHARTTWO");
         for(int i = 0; i < resultsOne.length; i++) {
 

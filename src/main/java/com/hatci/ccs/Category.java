@@ -27,8 +27,8 @@ public class Category {
         this.features = new ArrayList<>();
         this.featureNames = new ArrayList<>();
         this.categoryName = sheet.getSheetName();
-        //System.out.println("\n" + this.getCategoryName() + " in program " +
-        //        this.getProgramName() + " has " + this.rows + " rows.");
+        System.out.println("\n" + this.getCategoryName() + " in program " +
+                this.getProgramName() + " has " + this.rows + " rows.");
         this.setFeatures();
         //System.out.println(this.toString());
     }
@@ -51,7 +51,7 @@ public class Category {
                             this.featureNames.add(rowFeatureName);
                             // log feature
                             this.features.add(new Feature(rowFeatureName, this.sheetNum));
-                            //System.out.println("Added feature: " + rowFeatureName);
+                            System.out.println("Added feature: " + rowFeatureName);
                         }
                     }
                 }

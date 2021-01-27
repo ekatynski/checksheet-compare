@@ -46,7 +46,7 @@ public class CategorySet {
 
     public String toString() {
         String output = "\n";
-
+        System.out.println("Total Categories and Features");
         for(int i = 0; i < totalCategories.size(); i++) {
             output += totalCategories.get(i) + "\n";
             for(int j = 0; j < totalFeatures.get(i).size(); j++) {
@@ -54,8 +54,6 @@ public class CategorySet {
             }
         }
         return(output);
-
-
     }
 
     // compile a master feature list for each category
@@ -65,6 +63,8 @@ public class CategorySet {
             // if first master list category is included in first checksheet, copy over all features
             if (categoriesOne.contains(totalCategories.get(i))) {
                 // add feature list of referenced category
+                System.out.println("Category Index: " + categoriesOne.indexOf(totalCategories.get(i)));
+                System.out.println("CategoryList Size: " + categoriesOne.size());
                 totalFeatures.add(featuresOne.get(categoriesOne.indexOf(totalCategories.get(i))));
                 // if checklist two contains the same category
                 if (categoriesTwo.contains(totalCategories.get(i))) {
