@@ -11,15 +11,17 @@ public class App {
             Checksheet checksheet2 = new Checksheet(myConfig.getFileTwo(), myConfig);
 
             // compile common categories and features between lists
-            CategorySet commonCategories = new CategorySet(checksheet1, checksheet2);
-            System.out.println(commonCategories);
-//
-//            // create chart objects using the common category list, configuration settings, and the checksheets themselves
+            CategorySet commonCategories = new CategorySet(checksheet1, checksheet2, myConfig);
+
+            // create chart objects using the common category list, configuration settings, and the checksheets themselves
             Chart chart1 = new Chart(checksheet1, commonCategories, myConfig);
-//            Chart chart2 = new Chart(checksheet2, commonCategories, myConfig);
-//
-//            // create comparison chart object using two prior chart objects
-//            Chart comparisonChart = new Chart(chart1, chart2, commonCategories);
+            Chart chart2 = new Chart(checksheet2, commonCategories, myConfig);
+
+            System.out.print(chart1 + "\n" + chart2);
+
+            // create comparison chart object using two prior chart objects
+            Chart comparisonChart = new Chart(chart1, chart2, commonCategories);
+            System.out.println("\n" + comparisonChart);
         }
         // configuration pre-check failed
         else {
