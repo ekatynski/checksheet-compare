@@ -9,18 +9,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Checksheet {
 
-    private Configurator config;
+    private Configurator config = null;
     private String fileName;
-    private File file;
-    private FileInputStream fis;
-    private XSSFWorkbook wb;
+    private File file = null;
+    private FileInputStream fis =  null;
+    private XSSFWorkbook wb = null;
     private ArrayList<XSSFSheet> sheets = null;
     private ArrayList<Category> categories = null;
     private ArrayList<String> categoryNames = null;
-
-    Checksheet() {
-
-    }
 
     Checksheet(String fileName, Configurator config) {
         // open checksheet file

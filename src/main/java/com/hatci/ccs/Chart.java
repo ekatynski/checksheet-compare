@@ -14,6 +14,8 @@ public class Chart {
     private int totalFeatureCount;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
+        System.out.println("Sheet category size:" + sheet.getCategories().get(8).getFeatureNames().size());
+
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
         totalFeatureCount = 0;
@@ -44,8 +46,6 @@ public class Chart {
         System.out.println("Test Case Result Rows: " + testCaseResults.length);
         System.out.println("Test Case Result Cols: " + testCaseResults[0].length);
 
-
-
         commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
@@ -58,6 +58,9 @@ public class Chart {
                 // iterate through all features in common category list
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
                     // if feature set for current checksheet category contains a common-list feature
+                    // ERROR: sheet.getAllFeatures() contains more features than expected
+                    System.out.println(sheet.getAllFeatures().get(sheetCategoryIndex) + " contains " + commonCatsAndFeatures.getTotalFeatureList().get(i).get(j) + " :"
+                            + sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j)));
                     if(sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j))) {
                         // valid category contains a valid feature - populate results
                         // calculate the category feature list index corresponding to current master list feature
