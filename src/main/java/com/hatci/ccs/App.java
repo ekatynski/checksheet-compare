@@ -21,7 +21,10 @@ public class App {
 
             // create comparison chart object using two prior chart objects
             Chart comparisonChart = new Chart(chart1, chart2, commonCategories);
-            System.out.println("\n" + comparisonChart);
+            //System.out.println("\n" + comparisonChart);
+
+            //OutputSheet output = new OutputSheet();
+            OutputSheet output = new OutputSheet(chart1, chart2, commonCategories, myConfig);
         }
         // configuration pre-check failed
         else {

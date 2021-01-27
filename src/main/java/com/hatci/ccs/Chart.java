@@ -165,7 +165,7 @@ public class Chart {
         return categoryCount;
     }
 
-    private String getProgramName() {
+    public String getProgramName() {
         return programName;
     }
 
