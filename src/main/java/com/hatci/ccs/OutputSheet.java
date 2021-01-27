@@ -61,6 +61,9 @@ public class OutputSheet {
         defaultStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         defaultStyle.setWrapText(true);
 
+        // create comparison chart
+        comparisonChart = new Chart(chartOne, chartTwo, commonCategories);
+
         try {
             String fileName = "";
             fileName += chartOne.getProgramName() + ", "
@@ -68,13 +71,19 @@ public class OutputSheet {
 
             // create new output file
             fileOut = new FileOutputStream("../output/" + fileName + ".xlsx");
-            // set up output file sheets
+
+            // set up comparison file sheet
             XSSFSheet compare = wb.createSheet("Comparison");
             formatSheet(compare, commonCategories, chartOne.getWidth(), "Comparison");
+            populateResults(comparisonChart, compare);
+            // set up chart one sheet
             XSSFSheet sheetOne = wb.createSheet(chartOne.getProgramName());
             formatSheet(sheetOne, commonCategories, chartOne.getWidth(), chartOne.getProgramName());
+            populateResults(chartOne, sheetOne);
+            // set up chart two sheet
             XSSFSheet sheetTwo = wb.createSheet(chartTwo.getProgramName());
             formatSheet(sheetTwo, commonCategories, chartOne.getWidth(), chartTwo.getProgramName());
+            populateResults(chartTwo, sheetTwo);
 
             // close up shop
             wb.write(fileOut);
@@ -128,10 +137,10 @@ public class OutputSheet {
         // merge top row, form US/CAN columns
         currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
         rows[0].getCell(0).setCellValue(programName);
-        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 1 + (colCount/2)));
+        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 2,  + colCount/2));
         rows[0].getCell(2).setCellValue("US");
-        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 2 + colCount/2, colCount - 1));
-        rows[0].getCell(2 + colCount/2).setCellValue("CANADA");
+        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 1 + colCount/2, colCount - 1));
+        rows[0].getCell(1 + colCount/2).setCellValue("CANADA");
 
         // populate second row of table
         for(int i = 0; i < colCount; i++) {
@@ -147,5 +156,14 @@ public class OutputSheet {
         }
     }
 
-
+    private void populateResults(Chart currentChart, XSSFSheet currentSheet) {
+        // iterate through rows
+        for(int i = 2; i < rowCount; i++) {
+            // iterate through each cell in the row
+            for(int j = 2; j < colCount; j++) {
+                    // populate corresponding result
+                    rows[i].getCell(j).setCellValue(currentChart.getTestResults()[i-2][j-2]);
+            }
+        }
+    }
 }

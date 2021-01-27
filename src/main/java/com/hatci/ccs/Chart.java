@@ -141,7 +141,6 @@ public class Chart {
         }
     }
 
-
     public CategorySet getCategories() {
         return currentSet;
     }
