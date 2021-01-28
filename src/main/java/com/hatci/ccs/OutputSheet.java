@@ -3,11 +3,12 @@ package com.hatci.ccs;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -17,6 +18,7 @@ public class OutputSheet {
     private OutputStream fileOut = null;
     private XSSFCellStyle defaultStyle = null;
     private XSSFCellStyle percentageStyle = null;
+    private XSSFCellStyle ignoreStyle = null;
     private Chart comparisonChart = null;
     private int startingRow = 2;
     private int endingRow;
@@ -24,30 +26,7 @@ public class OutputSheet {
     private int colCount;
     private Row[] rows = null;
     private Cell[][] cells = null;
-
     private String[] resultType = null;
-
-    OutputSheet() {
-        wb = new XSSFWorkbook();
-
-        try {
-            // create new output file
-            fileOut = new FileOutputStream("../output/Output.xlsx");
-            // set up output file sheets
-            XSSFSheet compare = wb.createSheet("Comparison");
-            XSSFSheet sheetOne = wb.createSheet("Checksheet One");
-            XSSFSheet sheetTwo = wb.createSheet("Checksheet Two");
-
-            // close up shop
-            wb.write(fileOut);
-            fileOut.close();
-            wb.close();
-            System.out.println("\nOutput file created.");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     OutputSheet(Chart chartOne, Chart chartTwo, CategorySet commonCategories, Configurator myConfig) {
         wb = new XSSFWorkbook();
@@ -76,6 +55,18 @@ public class OutputSheet {
         percentageStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         percentageStyle.setWrapText(true);
 
+        // set invalid/other style
+        ignoreStyle = wb.createCellStyle();
+//        ignoreStyle.setBorderTop(BorderStyle.THIN);
+//        ignoreStyle.setBorderBottom(BorderStyle.THIN);
+//        ignoreStyle.setBorderLeft(BorderStyle.THIN);
+//        ignoreStyle.setBorderRight(BorderStyle.THIN);
+        ignoreStyle.setAlignment(HorizontalAlignment.CENTER);
+        ignoreStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        ignoreStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(196, 195, 192)));
+        ignoreStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        ignoreStyle.setWrapText(true);
+
         // create comparison chart
         comparisonChart = new Chart(chartOne, chartTwo, commonCategories);
 
@@ -89,16 +80,19 @@ public class OutputSheet {
 
             // set up comparison file sheet
             XSSFSheet compare = wb.createSheet("Comparison");
-            formatSheet(compare, commonCategories, chartOne.getWidth(), "Comparison");
+            formatSheet(compare, commonCategories, chartOne.getWidth(), "Comparison", myConfig, comparisonChart.getIgnoredRows());
             populateResults(comparisonChart, compare);
+            outlineTable(compare, "Comparison");
             // set up chart one sheet
             XSSFSheet sheetOne = wb.createSheet(chartOne.getProgramName());
-            formatSheet(sheetOne, commonCategories, chartOne.getWidth(), chartOne.getProgramName());
+            formatSheet(sheetOne, commonCategories, chartOne.getWidth(), chartOne.getProgramName(), myConfig, chartOne.getIgnoredRows());
             populateResults(chartOne, sheetOne);
+            outlineTable(sheetOne, chartOne.getProgramName());
             // set up chart two sheet
             XSSFSheet sheetTwo = wb.createSheet(chartTwo.getProgramName());
-            formatSheet(sheetTwo, commonCategories, chartOne.getWidth(), chartTwo.getProgramName());
+            formatSheet(sheetTwo, commonCategories, chartOne.getWidth(), chartTwo.getProgramName(), myConfig, chartTwo.getIgnoredRows());
             populateResults(chartTwo, sheetTwo);
+            outlineTable(sheetTwo, chartTwo.getProgramName());
 
             // close up shop
             wb.write(fileOut);
@@ -112,9 +106,10 @@ public class OutputSheet {
     }
 
     // create grid, populate feature names and categories
-    private void formatSheet(XSSFSheet currentSheet, CategorySet commonCategories, int outcomes, String programName) {
+    private void formatSheet(XSSFSheet currentSheet, CategorySet commonCategories, int outcomes, String programName, Configurator config, boolean[] ignoredRows) {
         // track inserted feature count to allow for proper cell merging
         int featureRows = startingRow;
+
         // one row per feature, plus a header
         rowCount = startingRow + commonCategories.getTotalFeatureCount() + 2;
         endingRow = rowCount - 2;
@@ -131,6 +126,13 @@ public class OutputSheet {
                 if (programName != "Comparison" || i < endingRow) {
                     rows[i].getCell(j).setCellStyle(defaultStyle);
                 }
+                // blot out rows intructed for ignorance according to config settings
+//                if (i >= startingRow && i < endingRow) {
+//                    if (ignoredRows[i - 2]) {
+//                        System.out.println("Detection!");
+//                        ignoreLine(rows[i]);
+//                    }
+//                }
             }
         }
 
@@ -141,6 +143,8 @@ public class OutputSheet {
             // output featurelist, just for testing
             System.out.println("Feature count for category " + commonCategories.getAllCategories().get(i) + ": " +
                     commonCategories.getTotalFeatureList().get(i).size());
+
+
             for(int j = 0; j < commonCategories.getTotalFeatureList().get(i).size(); j++) {
                 // populate feature names
                 rows[featureRows + j].getCell(1).setCellValue(commonCategories.getTotalFeatureList().get(i).get(j));
@@ -191,6 +195,37 @@ public class OutputSheet {
             }
         }
 
+        // populate second row of table
+        for(int i = 0; i < colCount; i++) {
+            if (i == 0) {
+                rows[1].getCell(i).setCellValue("Category");
+            }
+            else if (i == 1) {
+                rows[1].getCell(i).setCellValue("Feature");
+            }
+            else {
+                rows[1].getCell(i).setCellValue(resultType[(i - 2) % outcomes]);
+            }
+            // auto-size column for easy reading
+            currentSheet.autoSizeColumn(i);
+            // resize to allow for filter arrow buttons
+            currentSheet.setColumnWidth(i, currentSheet.getColumnWidth(i) + 600);
+        }
+
+        // add filters to starting row
+        currentSheet.setAutoFilter(new CellRangeAddress(startingRow - 1, startingRow - 1, 0, colCount - 1));
+    }
+
+    private void ignoreLine(Row ignoredRow) {
+        // roll through each cell
+        System.out.println("Line ignored!");
+        for (int i = 2; i < colCount; i++) {
+            // gray out the
+            ignoredRow.getCell(i).setCellStyle(ignoreStyle);
+        }
+    }
+
+    private void outlineTable(XSSFSheet currentSheet, String programName) {
         // outline entire table
         outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 0, colCount - 1));
         // outline header block
@@ -203,25 +238,9 @@ public class OutputSheet {
         outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 1 + colCount/2, colCount - 1));
         //outline footer outside of the comparison chart
         if (!programName.equals("Comparison")) {
-            System.out.println("Bottom chart outlined.");
             outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 0, colCount - 1));
             outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 0, 1));
             outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 2, colCount/2));
-        }
-
-        // populate second row of table
-        for(int i = 0; i < colCount; i++) {
-            if (i == 0) {
-                rows[1].getCell(i).setCellValue("Category");
-            }
-            else if (i == 1) {
-                rows[1].getCell(i).setCellValue("Feature");
-            }
-            else {
-                rows[1].getCell(i).setCellValue(resultType[(i - 2 ) % outcomes]);
-            }
-            // auto-size column for easy reading
-            currentSheet.autoSizeColumn(i);
         }
     }
 
