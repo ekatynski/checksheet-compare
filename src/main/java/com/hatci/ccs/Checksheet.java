@@ -9,18 +9,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Checksheet {
 
-    private Configurator config;
+    private Configurator config = null;
     private String fileName;
-    private File file;
-    private FileInputStream fis;
-    private XSSFWorkbook wb;
+    private File file = null;
+    private FileInputStream fis =  null;
+    private XSSFWorkbook wb = null;
     private ArrayList<XSSFSheet> sheets = null;
     private ArrayList<Category> categories = null;
     private ArrayList<String> categoryNames = null;
-
-    Checksheet() {
-
-    }
 
     Checksheet(String fileName, Configurator config) {
         // open checksheet file
@@ -56,6 +52,9 @@ public class Checksheet {
                     " Verify that this checksheet is properly formatted.\n");
         } else {
             this.scrapePages();
+            for (int i = 0; i < categories.size(); i++) {
+              categoryNames.add(categories.get(i).getCategoryName());
+            }
         }
     }
 
@@ -71,9 +70,6 @@ public class Checksheet {
 
     // compile a category name list
     public ArrayList<String> getCategoryNames() {
-      for (int i = 0; i < categories.size(); i++) {
-        categoryNames.add(categories.get(i).getCategoryName());
-      }
       return (categoryNames);
     }
 

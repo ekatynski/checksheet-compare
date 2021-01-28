@@ -2,23 +2,32 @@ package com.hatci.ccs;
 
 public class Chart {
 
-    private String[] resultType = {"TOTAL", "TESTED", "PASS", "FAIL", "N/A",
-    "NOT TESTED", "BLOCKED", "SINGLE", "INVALID", "OTHER"};
-
     private CategorySet currentSet = null;
     private int[][] testCaseResults = null;
     private int width;
     private int categoryCount;
     private int[] featureCounts = null;
-
+    private String programName = null;
+    private int totalFeatureCount;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
+        System.out.println("Sheet category size:" + sheet.getCategories().get(8).getFeatureNames().size());
+
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
+        totalFeatureCount = 0;
+        programName = sheet.getCategories().get(0).getProgramName();
+
+        System.out.println("Feature count breakdown: ");
+        // count features per category
         featureCounts = new int[commonCatsAndFeatures.getCategoryCount()];
         for(int i = 0; i < categoryCount; i++) {
             featureCounts[i] = commonCatsAndFeatures.getFeatureCount(i);
+            totalFeatureCount += featureCounts[i];
+            System.out.println(i + ":\t" + featureCounts[i]);
         }
+
+        System.out.println("Total number of features: " + totalFeatureCount);
 
         // determine chart width depending on config settings include invalid/other cases or not
         width = 8;
@@ -31,10 +40,11 @@ public class Chart {
 
         // matrix is double-wide to contain both American and Canadian results
         testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
+        commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
         // iterate through all categories in common category list
-        for(int i = 0; i < categoryCount; i++) {
+        for(int i = 0; i < config.getSheetCount(); i++) {
             // check that this checksheet contains said category
             if (sheet.getCategoryNames().contains(commonCatsAndFeatures.getAllCategories().get(i))) {
                 // calculate the checksheet category list index corresponding to current master list category
@@ -42,6 +52,8 @@ public class Chart {
                 // iterate through all features in common category list
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
                     // if feature set for current checksheet category contains a common-list feature
+                    System.out.println(sheet.getAllFeatures().get(sheetCategoryIndex) + " contains " + commonCatsAndFeatures.getTotalFeatureList().get(i).get(j) + ": "
+                            + sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j)));
                     if(sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j))) {
                         // valid category contains a valid feature - populate results
                         // calculate the category feature list index corresponding to current master list feature
@@ -80,58 +92,55 @@ public class Chart {
         }
     }
 
-    public Chart(Chart sheetOne, Chart sheetTwo) {
+    public Chart(Chart chartOne, Chart chartTwo, CategorySet commonCatsAndFeatures) {
         // gather common test data
-        this.currentSet = sheetOne.getCategories();
-        this.width = sheetOne.width;
-        this.featureCounts = sheetOne.featureCounts;
-        this.categoryCount = sheetOne.categoryCount;
+        this.currentSet = chartOne.getCategories();
+        this.width = chartOne.width;
+        this.featureCounts = chartOne.featureCounts;
+        this.categoryCount = chartOne.categoryCount;
+        this.programName = chartOne.getProgramName() + " / " + chartTwo.getProgramName() + " Comparison";
+        this.testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
 
         // import data from other charts
-        int resultsOne[][] = sheetOne.getTestResults();
-        int resultsTwo[][] = sheetTwo.getTestResults();
+        int resultsOne[][] = chartOne.getTestResults();
+        int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
-        for(int i = 0; i < resultsOne[0].length; i++) {
-            // iterate through each column in the current row
-            for(int j = 0; j < resultsOne.length; j++) {
+        for(int i = 0; i < resultsOne.length; i++) {
+
+            for(int j = 0; j < resultsOne[0].length; j++) {
                 // comparison chart results are determined subtractively
                 this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
             }
         }
     }
 
-
-    private CategorySet getCategories() {
+    public CategorySet getCategories() {
         return currentSet;
     }
 
-    private int[] getFeatureCounts() {
+    public int[] getFeatureCounts() {
         return featureCounts;
     }
 
-    private int[][] getTestResults() {
+    public int[][] getTestResults() {
         return testCaseResults;
     }
 
-    private int getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    private int getCategoryCount() {
+    public int getCategoryCount() {
         return categoryCount;
     }
 
-    private void formatSheet() {
-
-    }
-
-    private void populateSheet() {
-
+    public String getProgramName() {
+        return programName;
     }
 
     public String toString() {
-        String output = "\nUS:\t\t\tCAN:\n----------------\n";
+        String output = "\nUS:\t | \tCAN:\n----------------\n";
         int offset = 0;
 
         for(int i = 0; i < categoryCount; i++) {
