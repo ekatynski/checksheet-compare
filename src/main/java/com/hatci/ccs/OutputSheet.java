@@ -153,6 +153,7 @@ public class OutputSheet {
             else {
                 rows[1].getCell(i).setCellValue(resultType[(i - 2 ) % outcomes]);
             }
+            // auto-size column for easy reading
             currentSheet.autoSizeColumn(i);
         }
     }
