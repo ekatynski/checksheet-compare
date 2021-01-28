@@ -149,6 +149,22 @@ public class CaseCounter {
         return this.other;
     }
 
+    public boolean isInvalid() {
+        boolean isInvalid = false;
+        if (total == 0 && invalid > 0) {
+            isInvalid = true;
+        }
+        return isInvalid;
+    }
+
+    public boolean isOther() {
+        boolean isOther = false;
+        if (total == 0 && other > 0) {
+            isOther = true;
+        }
+        return isOther;
+    }
+
     public String toString() {
         return ("Total: \t\t" + this.getTotal()
                 + "\nTested: \t" + this.getTested()

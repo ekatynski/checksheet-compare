@@ -44,4 +44,23 @@ public class Feature {
     public int[] getCanResults() {
         return this.canTally.getArray();
     }
+
+    // for excluding features that are entirely invalid
+    public boolean isInvalid() {
+        boolean isInvalid = false;
+        if (usTally.isInvalid() && canTally.isInvalid()) {
+            isInvalid = true;
+        }
+        return isInvalid;
+    }
+
+    // for excluding features that are entirely other
+    public boolean isOther() {
+        boolean isInvalid = false;
+        if (usTally.isOther() && canTally.isOther()) {
+            isInvalid = true;
+        }
+        return isInvalid;
+    }
+
 }

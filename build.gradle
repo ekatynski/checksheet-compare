@@ -10,7 +10,7 @@ version ''
 mainClassName = 'com.hatci.ccs.App'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

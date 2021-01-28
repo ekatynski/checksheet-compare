@@ -30,7 +30,7 @@ public class Category {
         System.out.println("\n" + this.getCategoryName() + " in program " +
                 this.getProgramName() + " has " + this.rows + " rows.");
         this.setFeatures();
-        System.out.println(this.toString());
+        //System.out.println(this.toString());
     }
 
     // scrape checksheet tab for feature names
