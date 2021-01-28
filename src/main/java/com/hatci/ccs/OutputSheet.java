@@ -85,6 +85,7 @@ public class OutputSheet {
             formatSheet(sheetTwo, commonCategories, chartOne.getWidth(), chartTwo.getProgramName());
             populateResults(chartTwo, sheetTwo);
 
+
             // close up shop
             wb.write(fileOut);
             fileOut.close();
@@ -113,7 +114,6 @@ public class OutputSheet {
                 rows[i].createCell(j);
                 // outline cells
                 rows[i].getCell(j).setCellStyle(defaultStyle);
-
             }
         }
 
@@ -153,6 +153,7 @@ public class OutputSheet {
             else {
                 rows[1].getCell(i).setCellValue(resultType[(i - 2 ) % outcomes]);
             }
+            currentSheet.autoSizeColumn(i);
         }
     }
 
