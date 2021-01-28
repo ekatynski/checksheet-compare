@@ -1,5 +1,7 @@
 package com.hatci.ccs;
 
+import java.util.Arrays;
+
 public class Chart {
 
     private CategorySet currentSet = null;
@@ -9,6 +11,7 @@ public class Chart {
     private int[] featureCounts = null;
     private String programName = null;
     private int totalFeatureCount;
+    private boolean[] featureIgnored = null;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
         System.out.println("Sheet category size:" + sheet.getCategories().get(8).getFeatureNames().size());
@@ -26,6 +29,10 @@ public class Chart {
             totalFeatureCount += featureCounts[i];
             System.out.println(i + ":\t" + featureCounts[i]);
         }
+
+        // track which features are to be ignored in output sheet
+        featureIgnored = new boolean[totalFeatureCount];
+        Arrays.fill(featureIgnored, false);
 
         System.out.println("Total number of features: " + totalFeatureCount);
 
@@ -62,10 +69,12 @@ public class Chart {
                         for(int k = 0; k < width; k++) {
                             // copy test case results from US CaseCounter within current feature within current category
                             testCaseResults[listedFeatures + j][k] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getUsResults()[k];
+                            setIgnorance(listedFeatures + j, sheet.getCategories().get(sheetCategoryIndex).getFeatures().get(categoryFeatureIndex).getUsResults(), config);
                         }
                         // CAN -- offset to other half of Matrix (indices 10 and above)
                         for(int k = 0; k < width; k++) {
                             testCaseResults[listedFeatures + j][k + width] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getCanResults()[k];
+                            setIgnorance(listedFeatures + j, sheet.getCategories().get(sheetCategoryIndex).getFeatures().get(categoryFeatureIndex).getCanResults(), config);
                         }
                     }
                     else {
@@ -101,18 +110,60 @@ public class Chart {
         this.programName = chartOne.getProgramName() + " / " + chartTwo.getProgramName() + " Comparison";
         this.testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
 
+        this.featureIgnored = new boolean[chartOne.featureIgnored.length];
+        for(int i = 0; i < chartOne.featureIgnored.length; i++) {
+            // ignore a feature if it's ignored on both sheets
+            this.featureIgnored[i] = chartOne.featureIgnored[i] && chartTwo.featureIgnored[i];
+        }
+
         // import data from other charts
         int resultsOne[][] = chartOne.getTestResults();
         int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
         for(int i = 0; i < resultsOne.length; i++) {
-
             for(int j = 0; j < resultsOne[0].length; j++) {
                 // comparison chart results are determined subtractively
                 this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
             }
         }
+    }
+
+    private void setIgnorance(int row, int[] testOutcomes, Configurator config) {
+        // cycle through all of the outcomes
+        boolean potentialIgnoreCase = true;
+        for (int i = 0; i < testOutcomes.length; i++) {
+            // if there are any non-invalid test results
+            if (i < 8 && testOutcomes[i] > 0) {
+                // skip the feature
+                potentialIgnoreCase = false;
+            }
+        }
+        if (potentialIgnoreCase) {
+            if (!config.getIncludeInvalid() && !config.getIncludeOther()) {
+                if (testOutcomes[8] > 0 || testOutcomes[9] > 0) {
+                    featureIgnored[row] = true;
+                }
+            }
+            // if invalid cases are excluded but not "other"
+            else if (!config.getIncludeInvalid()) {
+                // if there are invalid cases but no "other" cases
+                if (testOutcomes[8] > 0 && testOutcomes[9] == 0) {
+                    featureIgnored[row] = true;
+                }
+            }
+            // if "other" cases are excluded but not invalid
+            else if (!config.getIncludeOther()) {
+                // if there are "other" cases but no invalid cases
+                if (testOutcomes[9] > 0 && testOutcomes[8] == 0) {
+                    featureIgnored[row] = true;
+                }
+            }
+        }
+    }
+
+    public boolean[] getIgnoredRows() {
+        return featureIgnored;
     }
 
     public CategorySet getCategories() {
