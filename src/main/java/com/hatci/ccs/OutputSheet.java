@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,8 +16,10 @@ public class OutputSheet {
     private XSSFWorkbook wb = null;
     private OutputStream fileOut = null;
     private XSSFCellStyle defaultStyle = null;
+    private XSSFCellStyle percentageStyle = null;
     private Chart comparisonChart = null;
     private int startingRow = 2;
+    private int endingRow;
     private int rowCount;
     private int colCount;
     private Row[] rows = null;
@@ -62,6 +65,17 @@ public class OutputSheet {
         defaultStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         defaultStyle.setWrapText(true);
 
+        // set percentage cell style
+        percentageStyle = wb.createCellStyle();
+        percentageStyle.setDataFormat(wb.createDataFormat().getFormat("00.0%"));
+        percentageStyle.setBorderTop(BorderStyle.THIN);
+        percentageStyle.setBorderBottom(BorderStyle.THIN);
+        percentageStyle.setBorderLeft(BorderStyle.THIN);
+        percentageStyle.setBorderRight(BorderStyle.THIN);
+        percentageStyle.setAlignment(HorizontalAlignment.CENTER);
+        percentageStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        percentageStyle.setWrapText(true);
+
         // create comparison chart
         comparisonChart = new Chart(chartOne, chartTwo, commonCategories);
 
@@ -102,7 +116,8 @@ public class OutputSheet {
         // track inserted feature count to allow for proper cell merging
         int featureRows = startingRow;
         // one row per feature, plus a header
-        rowCount = startingRow + commonCategories.getTotalFeatureCount();
+        rowCount = startingRow + commonCategories.getTotalFeatureCount() + 2;
+        endingRow = rowCount - 2;
         // sidebar, plus one cellblock each for US and CAN containing all listed outcomes
         colCount = 2 + 2*outcomes;
         rows = new Row[rowCount];
@@ -112,8 +127,10 @@ public class OutputSheet {
             rows[i] = currentSheet.createRow(i);
             for(int j = 0; j < colCount; j++) {
                 rows[i].createCell(j);
-                // outline cells
-                rows[i].getCell(j).setCellStyle(defaultStyle);
+                // outline cells, excluding a footer on the comparison tab
+                if (programName != "Comparison" || i < endingRow) {
+                    rows[i].getCell(j).setCellStyle(defaultStyle);
+                }
             }
         }
 
@@ -142,16 +159,55 @@ public class OutputSheet {
         currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 1 + colCount/2, colCount - 1));
         rows[0].getCell(1 + colCount/2).setCellValue("CANADA");
 
+        //set up footer in program tables
+        if (!programName.equals("Comparison")) {
+            currentSheet.addMergedRegion(new CellRangeAddress(endingRow, endingRow, 0, 1));
+            rows[endingRow].getCell(0).setCellValue("TOTALS");
+            currentSheet.addMergedRegion(new CellRangeAddress(endingRow + 1, endingRow + 1, 0, 1));
+            rows[endingRow + 1].getCell(0).setCellValue("PERCENTAGES");
+        }
+
+        // populate footer with formulas
+        if (!programName.equals("Comparison")) {
+            // column ID for first formula rows set to "C"
+            char columnID = 67;
+            String totalCountCell = "";
+            // iterate through each row
+            for (int i = 2; i < colCount; i++) {
+                // set up summation formulas
+                rows[endingRow].getCell(i).setCellFormula("SUM(" + Character.toString(columnID) + Integer.toString(startingRow)
+                        + ":" + Character.toString(columnID) + Integer.toString(endingRow - 1) + ")");
+
+                // set up percentage formulas
+                // track "total" cell address
+                if ((i - 2) % ((colCount -2) / 2) == 0) {
+                    totalCountCell = Character.toString(columnID) + Integer.toString(endingRow + 1);
+                }
+
+                rows[endingRow + 1].getCell(i).setCellStyle(percentageStyle);
+                rows[endingRow + 1].getCell(i).setCellFormula(Character.toString(columnID) + Integer.toString(endingRow + 1)
+                        + "/" + totalCountCell);
+                columnID++;
+            }
+        }
+
         // outline entire table
-        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 0, colCount - 1));
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 0, colCount - 1));
         // outline header block
         outlineAreasMedium(currentSheet, new CellRangeAddress(0, startingRow - 1, 0, colCount - 1));
         // outline left margin key
-        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 0, 1));
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 0, 1));
         // outline US result block
-        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 2, colCount/2));
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 2, colCount/2));
         // outline CAN result block
-        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 1 + colCount/2, colCount - 1));
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, endingRow - 1, 1 + colCount/2, colCount - 1));
+        //outline footer outside of the comparison chart
+        if (!programName.equals("Comparison")) {
+            System.out.println("Bottom chart outlined.");
+            outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 0, colCount - 1));
+            outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 0, 1));
+            outlineAreasMedium(currentSheet, new CellRangeAddress(endingRow, rowCount - 1, 2, colCount/2));
+        }
 
         // populate second row of table
         for(int i = 0; i < colCount; i++) {
@@ -180,7 +236,7 @@ public class OutputSheet {
 
     private void populateResults(Chart currentChart, XSSFSheet currentSheet) {
         // iterate through rows
-        for(int i = 2; i < rowCount; i++) {
+        for(int i = startingRow; i < endingRow; i++) {
             // iterate through each cell in the row
             for(int j = 2; j < colCount; j++) {
                     // populate corresponding result
