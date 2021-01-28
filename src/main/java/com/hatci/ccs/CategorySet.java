@@ -25,10 +25,8 @@ public class CategorySet {
 
         featuresOne = sheetOne.getAllFeatures();
         featuresTwo = sheetTwo.getAllFeatures();
-
         totalFeatureCount = 0;
         totalCategoryCount = 0;
-
         totalFeatures = new ArrayList();
         for(int i = 0; i < config.getSheetCount(); i++) {
             totalFeatures.add(new ArrayList<String>());
@@ -51,8 +49,6 @@ public class CategorySet {
             totalCategoryCount++;
             totalFeatureCount += totalFeatures.get(i).size();
         }
-
-        //System.out.println(this);
     }
 
     public String toString() {
@@ -75,34 +71,16 @@ public class CategorySet {
             // if first master list category is included in first checksheet, copy over all features
             if (categoriesOne.contains(totalCategories.get(i))) {
                 // add feature list of referenced category
-//                System.out.println("Category Index: " + categoriesOne.indexOf(totalCategories.get(i)));
-//                System.out.println("CategoryList Size: " + categoriesOne.size());
-//
-//                System.out.println("Total Feature Category Size: " + totalFeatures.size());
-//                System.out.println("FeaturesOne Category Size: " + featuresOne.get(i).size());
-
-//                totalFeatures.add(featuresOne.get(categoriesOne.indexOf(totalCategories.get(i))));
                 for(int j = 0; j < featuresOne.get(categoriesOne.indexOf(totalCategories.get(i))).size(); j++) {
-//                    System.out.println("Sheet category size (FeatureOne (1) Pre-Add):" + sheetOne.getCategories().get(i).getFeatureNames().size());
-//                    System.out.println("Sheet category size (FeatureTwo (1) Post-Add):" + sheetTwo.getCategories().get(i).getFeatureNames().size());
                     totalFeatures.get(i).add(featuresOne.get(categoriesOne.indexOf(totalCategories.get(i))).get(j));
-//                    System.out.println("Sheet category size (FeatureOne (1) Post-Add):" + sheetOne.getCategories().get(i).getFeatureNames().size());
-//                    System.out.println("Sheet category size (FeatureTwo (1) Post-Add):" + sheetTwo.getCategories().get(i).getFeatureNames().size());
                 }
-
                 // if checklist two contains the same category
                 if (categoriesTwo.contains(totalCategories.get(i))) {
                     // iterate through all features for that category of checklist two
                     for(int j = 0; j < featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).size(); j++) {
                         // add any non-redundant features to the master feature-list for this category
                         if (!totalFeatures.get(i).contains(featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).get(j))) {
-//                            System.out.println("Sheet category size (FeatureOne (2) Pre-Add):" + sheetOne.getCategories().get(i).getFeatureNames().size());
-//                            System.out.println("Sheet category size (FeatureTwo (2) Post-Add):" + sheetTwo.getCategories().get(i).getFeatureNames().size());
-                            // PROBLEMS
                             totalFeatures.get(i).add(featuresTwo.get(categoriesTwo.indexOf(totalCategories.get(i))).get(j));
-                            // PROBLEMS
-//                            System.out.println("Sheet category size (FeatureOne (2) Post-Add):" + sheetOne.getCategories().get(i).getFeatureNames().size());
-//                            System.out.println("Sheet category size (FeatureTwo (2) Post-Add):" + sheetTwo.getCategories().get(i).getFeatureNames().size());
                         }
                     }
                 }

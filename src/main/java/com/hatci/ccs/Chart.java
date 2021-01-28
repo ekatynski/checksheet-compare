@@ -40,9 +40,6 @@ public class Chart {
 
         // matrix is double-wide to contain both American and Canadian results
         testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
-//        System.out.println("Test Case Result Rows: " + testCaseResults.length);
-//        System.out.println("Test Case Result Cols: " + testCaseResults[0].length);
-
         commonCatsAndFeatures.getAllCategories();
 
         int listedFeatures = 0;
@@ -55,7 +52,6 @@ public class Chart {
                 // iterate through all features in common category list
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
                     // if feature set for current checksheet category contains a common-list feature
-                    // ERROR: sheet.getAllFeatures() contains more features than expected
                     System.out.println(sheet.getAllFeatures().get(sheetCategoryIndex) + " contains " + commonCatsAndFeatures.getTotalFeatureList().get(i).get(j) + ": "
                             + sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j)));
                     if(sheet.getAllFeatures().get(sheetCategoryIndex).contains(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j))) {
@@ -63,25 +59,12 @@ public class Chart {
                         // calculate the category feature list index corresponding to current master list feature
                         int categoryFeatureIndex = sheet.getCategories().get(sheetCategoryIndex).getFeatureNames().indexOf(commonCatsAndFeatures.getTotalFeatureList().get(i).get(j));
                         // US
-//                        System.out.println("WIDTH: " + 2*width);
-//                        System.out.println("Inserting feature: " + currentSet.getTotalFeatureList().get(i).get(j));
                         for(int k = 0; k < width; k++) {
                             // copy test case results from US CaseCounter within current feature within current category
-                            // ERROR HERE
-//                            System.out.println("Index before: " + (listedFeatures + j));
-//                            System.out.println("ROW: " + (listedFeatures + j) + "\tCOL: " + k);
-//                            System.out.println("Sheet Category Index: " + sheetCategoryIndex);
-//                            System.out.println("Sheet Category Size: " + sheet.getCategories().size());
-//                            System.out.println("Category Feature Index: " + categoryFeatureIndex);
-//                            System.out.println("Category Feature Size: " + sheet.getCategories().get(sheetCategoryIndex).getFeatures().size());
-                            // PROBLEM IN COUNTING ON SHEET TO HARBOR ALL RESULTS - categoryFeatureIndex is causing the issue!
                             testCaseResults[listedFeatures + j][k] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getUsResults()[k];
-
-//                            System.out.println("Index after: " + (listedFeatures + j));
                         }
                         // CAN -- offset to other half of Matrix (indices 10 and above)
                         for(int k = 0; k < width; k++) {
-                            // LIKELY SUBSEQUENT ERROR HERE
                             testCaseResults[listedFeatures + j][k + width] = ((sheet.getCategories().get(sheetCategoryIndex)).getFeatures().get(categoryFeatureIndex)).getCanResults()[k];
                         }
                     }
@@ -98,8 +81,6 @@ public class Chart {
                 // no test cases for this category will exist; mark everything zero
                 // iterate through category features
                 for(int j = 0; j < commonCatsAndFeatures.getFeatureCount(i); j++) {
-
-
                     // iterate through all columns visible on finished chart
                     for(int k = 0; k < width; k++) {
                         testCaseResults[listedFeatures + j][k] = 0;
@@ -119,25 +100,18 @@ public class Chart {
         this.categoryCount = chartOne.categoryCount;
         this.programName = chartOne.getProgramName() + " / " + chartTwo.getProgramName() + " Comparison";
         this.testCaseResults = new int[commonCatsAndFeatures.getTotalFeatureCount()][2*width];
-//        System.out.println("commonCatsAndFeatures feature count: " + commonCatsAndFeatures.getTotalFeatureCount());
 
         // import data from other charts
         int resultsOne[][] = chartOne.getTestResults();
         int resultsTwo[][] = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
-
-//        System.out.println("CHART ROWS: ");
-//        System.out.println("CHART COLUMNS: ");
-//        System.out.println("FEATURE:\tRESULT, CHARTONE, CHARTTWO");
         for(int i = 0; i < resultsOne.length; i++) {
 
             for(int j = 0; j < resultsOne[0].length; j++) {
                 // comparison chart results are determined subtractively
                 this.testCaseResults[i][j] = resultsOne[i][j] - resultsTwo[i][j];
-//                System.out.print(testCaseResults[i][j] + "," + resultsOne[i][j] + "," + resultsTwo[i][j] + "\t");
             }
-//            System.out.println("");
         }
     }
 
@@ -166,7 +140,7 @@ public class Chart {
     }
 
     public String toString() {
-        String output = "\nUS:\t\t\tCAN:\n----------------\n";
+        String output = "\nUS:\t | \tCAN:\n----------------\n";
         int offset = 0;
 
         for(int i = 0; i < categoryCount; i++) {

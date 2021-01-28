@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -85,7 +86,6 @@ public class OutputSheet {
             formatSheet(sheetTwo, commonCategories, chartOne.getWidth(), chartTwo.getProgramName());
             populateResults(chartTwo, sheetTwo);
 
-
             // close up shop
             wb.write(fileOut);
             fileOut.close();
@@ -127,7 +127,7 @@ public class OutputSheet {
             for(int j = 0; j < commonCategories.getTotalFeatureList().get(i).size(); j++) {
                 // populate feature names
                 rows[featureRows + j].getCell(1).setCellValue(commonCategories.getTotalFeatureList().get(i).get(j));
-                System.out.println("\t - " + commonCategories.getTotalFeatureList().get(j));
+                System.out.println("\t - " + commonCategories.getTotalFeatureList().get(i).get(j));
             }
             // merge category columns to match subsequent features
             currentSheet.addMergedRegion(new CellRangeAddress(featureRows, (featureRows + commonCategories.getTotalFeatureList().get(i).size() - 1), 0, 0));
@@ -137,10 +137,21 @@ public class OutputSheet {
         // merge top row, form US/CAN columns
         currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
         rows[0].getCell(0).setCellValue(programName);
-        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 2,  + colCount/2));
+        currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 2,  colCount/2));
         rows[0].getCell(2).setCellValue("US");
         currentSheet.addMergedRegion(new CellRangeAddress(0, 0, 1 + colCount/2, colCount - 1));
         rows[0].getCell(1 + colCount/2).setCellValue("CANADA");
+
+        // outline entire table
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 0, colCount - 1));
+        // outline header block
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, startingRow - 1, 0, colCount - 1));
+        // outline left margin key
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 0, 1));
+        // outline US result block
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 2, colCount/2));
+        // outline CAN result block
+        outlineAreasMedium(currentSheet, new CellRangeAddress(0, rowCount - 1, 1 + colCount/2, colCount - 1));
 
         // populate second row of table
         for(int i = 0; i < colCount; i++) {
@@ -156,6 +167,15 @@ public class OutputSheet {
             // auto-size column for easy reading
             currentSheet.autoSizeColumn(i);
         }
+    }
+
+    private void outlineAreasMedium(XSSFSheet currentSheet, CellRangeAddress range) {
+        // outline table with medium border
+        CellRangeAddress fullSheetRegion = new CellRangeAddress(0, rowCount - 1, 0, colCount - 1);
+        RegionUtil.setBorderTop(BorderStyle.MEDIUM, range, currentSheet);
+        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, range, currentSheet);
+        RegionUtil.setBorderRight(BorderStyle.MEDIUM, range, currentSheet);
+        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, range, currentSheet);
     }
 
     private void populateResults(Chart currentChart, XSSFSheet currentSheet) {
