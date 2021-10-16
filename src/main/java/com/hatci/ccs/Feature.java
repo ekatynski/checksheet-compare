@@ -1,10 +1,10 @@
 package com.hatci.ccs;
 
 public class Feature {
-    private String name;
-    private int sheetIndex;  // refers to category/checksheet page of said feature
-    private CaseCounter usTally = new CaseCounter();
-    private CaseCounter canTally = new CaseCounter();
+    private final String name;
+    private final int sheetIndex;  // refers to category/checksheet page of said feature
+    private final CaseCounter usTally = new CaseCounter();
+    private final CaseCounter canTally = new CaseCounter();
 
     public Feature(String name, int sheetIndex) {
         this.name = name;
@@ -47,19 +47,13 @@ public class Feature {
 
     // for excluding features that are entirely invalid
     public boolean isInvalid() {
-        boolean isInvalid = false;
-        if (usTally.isInvalid() && canTally.isInvalid()) {
-            isInvalid = true;
-        }
+        boolean isInvalid = usTally.isInvalid() && canTally.isInvalid();
         return isInvalid;
     }
 
     // for excluding features that are entirely other
     public boolean isOther() {
-        boolean isInvalid = false;
-        if (usTally.isOther() && canTally.isOther()) {
-            isInvalid = true;
-        }
+        boolean isInvalid = usTally.isOther() && canTally.isOther();
         return isInvalid;
     }
 

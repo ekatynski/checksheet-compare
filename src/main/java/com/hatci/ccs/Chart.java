@@ -7,10 +7,9 @@ public class Chart {
     private CategorySet currentSet = null;
     private int[][] testCaseResults = null;
     private int width;
-    private int categoryCount;
+    private final int categoryCount;
     private int[] featureCounts = null;
     private String programName = null;
-    private int totalFeatureCount;
     private boolean[] featureIgnored = null;
 
     Chart(Checksheet sheet, CategorySet commonCatsAndFeatures, Configurator config) {
@@ -18,7 +17,7 @@ public class Chart {
 
         currentSet = commonCatsAndFeatures;
         categoryCount = commonCatsAndFeatures.getCategoryCount();
-        totalFeatureCount = 0;
+        int totalFeatureCount = 0;
         programName = sheet.getCategories().get(0).getProgramName();
 
         System.out.println("Feature count breakdown: ");
@@ -38,7 +37,7 @@ public class Chart {
 
         // determine chart width depending on config settings include invalid/other cases or not
         width = 8;
-        if ((config.getIncludeInvalid() == true) && (config.getIncludeOther() == true)) {
+        if ((config.getIncludeInvalid()) && (config.getIncludeOther())) {
             width = 10;
         }
         else if (config.getIncludeInvalid() != config.getIncludeOther()) {
@@ -117,8 +116,8 @@ public class Chart {
         }
 
         // import data from other charts
-        int resultsOne[][] = chartOne.getTestResults();
-        int resultsTwo[][] = chartTwo.getTestResults();
+        int[][] resultsOne = chartOne.getTestResults();
+        int[][] resultsTwo = chartTwo.getTestResults();
 
         // iterate through the rows of the matrix
         for(int i = 0; i < resultsOne.length; i++) {
@@ -137,6 +136,7 @@ public class Chart {
             if (i < 8 && testOutcomes[i] > 0) {
                 // skip the feature
                 potentialIgnoreCase = false;
+                break;
             }
         }
         if (potentialIgnoreCase) {
@@ -191,25 +191,25 @@ public class Chart {
     }
 
     public String toString() {
-        String output = "\nUS:\t | \tCAN:\n----------------\n";
+        StringBuilder output = new StringBuilder("\nUS:\t | \tCAN:\n----------------\n");
         int offset = 0;
 
         for(int i = 0; i < categoryCount; i++) {
             // place category name
-            output += "\n" + currentSet.getAllCategories().get(i) + "\n";
+            output.append("\n").append(currentSet.getAllCategories().get(i)).append("\n");
             // place feature name
             for(int j = 0; j < featureCounts[i]; j++) {
-                output += "\t" + currentSet.getTotalFeatureList().get(i).get(j) + "(" + (offset + j) + ")" + "\n\t\t";
+                output.append("\t").append(currentSet.getTotalFeatureList().get(i).get(j)).append("(").append(offset + j).append(")").append("\n\t\t");
                 // place test results
                 for(int k = 0; k < width * 2; k++) {
                     if (k == width ) {
-                      output += " | \t";
+                      output.append(" | \t");
                     }
-                    output += testCaseResults[offset + j][k] + "\t";
+                    output.append(testCaseResults[offset + j][k]).append("\t");
                 }
-                output += "\n";
+                output.append("\n");
             }
         }
-        return output;
+        return output.toString();
     }
 }

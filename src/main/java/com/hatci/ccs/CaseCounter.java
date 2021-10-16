@@ -96,9 +96,8 @@ public class CaseCounter {
     }
 
     public int[] getArray() {
-        int[] output = {this.total, this.tested, this.pass, this.fail, this.na,
-        this.notTested, this.blocked, this.single, this.invalid, this.other};
-        return(output);
+        return(new int[]{this.total, this.tested, this.pass, this.fail, this.na,
+        this.notTested, this.blocked, this.single, this.invalid, this.other});
     }
 
     public void incInvalid() {
@@ -150,18 +149,12 @@ public class CaseCounter {
     }
 
     public boolean isInvalid() {
-        boolean isInvalid = false;
-        if (total == 0 && invalid > 0) {
-            isInvalid = true;
-        }
+        boolean isInvalid = total == 0 && invalid > 0;
         return isInvalid;
     }
 
     public boolean isOther() {
-        boolean isOther = false;
-        if (total == 0 && other > 0) {
-            isOther = true;
-        }
+        boolean isOther = total == 0 && other > 0;
         return isOther;
     }
 

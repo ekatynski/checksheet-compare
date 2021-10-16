@@ -1,6 +1,5 @@
 package com.hatci.ccs;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
@@ -14,10 +13,6 @@ public class Category {
     private ArrayList<Feature> features = null;
     private ArrayList<String> featureNames = null;
     private String categoryName;
-
-    Category() {
-
-    }
 
     Category(XSSFSheet sheet, Configurator config, int sheetNum) {
         this.config = config;
@@ -126,14 +121,14 @@ public class Category {
     }
 
     public String toString() {
-        String output = ("Category: " + this.getCategoryName() + "\n");
+        StringBuilder output = new StringBuilder(("Category: " + this.getCategoryName() + "\n"));
 
-        for (int i = 0; i < this.features.size(); i++) {
-            output += features.get(i).toString();
+        for (Feature feature : this.features) {
+            output.append(feature.toString());
         }
 
-        output += "\n";
-        return(output);
+        output.append("\n");
+        return(output.toString());
     }
 
     // return a feature name list

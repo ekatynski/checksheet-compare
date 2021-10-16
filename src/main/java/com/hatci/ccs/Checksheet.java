@@ -10,9 +10,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class Checksheet {
 
     private Configurator config = null;
-    private String fileName;
-    private File file = null;
-    private FileInputStream fis =  null;
     private XSSFWorkbook wb = null;
     private ArrayList<XSSFSheet> sheets = null;
     private ArrayList<Category> categories = null;
@@ -20,16 +17,15 @@ public class Checksheet {
 
     Checksheet(String fileName, Configurator config) {
         // open checksheet file
-        this.fileName = fileName;
         this.config = config;
         this.categoryNames = new ArrayList();
-        this.file = new File("../input/" + fileName);
+        File file = new File("../input/" + fileName);
 
         // open sheets from workbook
-        this.sheets = new ArrayList<XSSFSheet>();
+        this.sheets = new ArrayList<>();
 
         // open category array
-        this.categories = new ArrayList<Category>();
+        this.categories = new ArrayList<>();
 
         // confirm file is open
         if (file.isFile() && file.exists()) {
@@ -40,7 +36,7 @@ public class Checksheet {
 
         try {
             // open input stream from new file
-            fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(file);
             // open workbook from file input stream
             wb = new XSSFWorkbook(fis);
         } catch (Exception e) {
@@ -52,8 +48,8 @@ public class Checksheet {
                     " Verify that this checksheet is properly formatted.\n");
         } else {
             this.scrapePages();
-            for (int i = 0; i < categories.size(); i++) {
-              categoryNames.add(categories.get(i).getCategoryName());
+            for (Category category : categories) {
+                categoryNames.add(category.getCategoryName());
             }
         }
     }
@@ -84,8 +80,8 @@ public class Checksheet {
     // compile an ArrayMatrix(?) of all features across all categories for checksheet
     public ArrayList<ArrayList<String>> getAllFeatures() {
         ArrayList<ArrayList<String>> allFeatures = new ArrayList();
-        for(int i = 0; i < categories.size(); i++) {
-            allFeatures.add(categories.get(i).getFeatureNames());
+        for (Category category : categories) {
+            allFeatures.add(category.getFeatureNames());
         }
         return (allFeatures);
     }

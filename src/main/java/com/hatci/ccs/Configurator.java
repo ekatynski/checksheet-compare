@@ -48,7 +48,7 @@ public class Configurator {
 
     public boolean checkAll() {
         boolean ready = true;
-        System.out.println("");
+        System.out.println();
         // ensures all regular use directories are present
         // contains config.json file, checksheets for input, and chart output respectively
 //        ready = (ready && this.directoryCheck("config"));
@@ -265,8 +265,8 @@ public class Configurator {
             System.out.println(this.getFileOne() + "\n" + this.getFileTwo());
         }
         else if (fileCount >= 0 && fileCount != 2) {
-            for (int i = 0; i < pathnames.length; i++) {
-                System.out.println(pathnames[i]);
+            for (String pathname : pathnames) {
+                System.out.println(pathname);
             }
         }
         return correctFiles;

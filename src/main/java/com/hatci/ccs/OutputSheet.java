@@ -3,7 +3,6 @@ package com.hatci.ccs;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -14,22 +13,19 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class OutputSheet {
 
-    private XSSFWorkbook wb = null;
-    private OutputStream fileOut = null;
     private XSSFCellStyle defaultStyle = null;
     private XSSFCellStyle percentageStyle = null;
     private XSSFCellStyle ignoreStyle = null;
-    private Chart comparisonChart = null;
-    private int startingRow = 2;
+    private final int startingRow = 2;
     private int endingRow;
     private int rowCount;
     private int colCount;
     private Row[] rows = null;
-    private Cell[][] cells = null;
+    private final Cell[][] cells = null;
     private String[] resultType = null;
 
     OutputSheet(Chart chartOne, Chart chartTwo, CategorySet commonCategories, Configurator myConfig) {
-        wb = new XSSFWorkbook();
+        XSSFWorkbook wb = new XSSFWorkbook();
 
         resultType = new String[] {"TOTAL", "TESTED", "PASS", "FAIL", "N/A",
                 "NOT TESTED", "BLOCKED", "SINGLE", "INVALID", "OTHER"};
@@ -68,7 +64,7 @@ public class OutputSheet {
         ignoreStyle.setWrapText(true);
 
         // create comparison chart
-        comparisonChart = new Chart(chartOne, chartTwo, commonCategories);
+        Chart comparisonChart = new Chart(chartOne, chartTwo, commonCategories);
 
         try {
             String fileName = "";
@@ -76,7 +72,7 @@ public class OutputSheet {
                     + chartTwo.getProgramName() + " Comparison" ;
 
             // create new output file
-            fileOut = new FileOutputStream("../output/" + fileName + ".xlsx");
+            OutputStream fileOut = new FileOutputStream("../output/" + fileName + ".xlsx");
 
             // set up comparison file sheet
             XSSFSheet compare = wb.createSheet("Comparison");
@@ -123,7 +119,7 @@ public class OutputSheet {
             for(int j = 0; j < colCount; j++) {
                 rows[i].createCell(j);
                 // outline cells, excluding a footer on the comparison tab
-                if (programName != "Comparison" || i < endingRow) {
+                if (!programName.equals("Comparison") || i < endingRow) {
                     rows[i].getCell(j).setCellStyle(defaultStyle);
                 }
                 // blot out rows intructed for ignorance according to config settings
@@ -179,17 +175,17 @@ public class OutputSheet {
             // iterate through each row
             for (int i = 2; i < colCount; i++) {
                 // set up summation formulas
-                rows[endingRow].getCell(i).setCellFormula("SUM(" + Character.toString(columnID) + Integer.toString(startingRow)
-                        + ":" + Character.toString(columnID) + Integer.toString(endingRow - 1) + ")");
+                rows[endingRow].getCell(i).setCellFormula("SUM(" + columnID + startingRow
+                        + ":" + columnID + (endingRow - 1) + ")");
 
                 // set up percentage formulas
                 // track "total" cell address
                 if ((i - 2) % ((colCount -2) / 2) == 0) {
-                    totalCountCell = Character.toString(columnID) + Integer.toString(endingRow + 1);
+                    totalCountCell = Character.toString(columnID) + (endingRow + 1);
                 }
 
                 rows[endingRow + 1].getCell(i).setCellStyle(percentageStyle);
-                rows[endingRow + 1].getCell(i).setCellFormula(Character.toString(columnID) + Integer.toString(endingRow + 1)
+                rows[endingRow + 1].getCell(i).setCellFormula(Character.toString(columnID) + (endingRow + 1)
                         + "/" + totalCountCell);
                 columnID++;
             }

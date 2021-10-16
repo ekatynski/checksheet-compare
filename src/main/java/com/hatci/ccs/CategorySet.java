@@ -10,7 +10,6 @@ public class CategorySet {
     private ArrayList<ArrayList<String>> totalFeatures = null;
     private ArrayList<ArrayList<String>> featuresOne = null;
     private ArrayList<ArrayList<String>> featuresTwo = null;
-    private int totalCategoryCount;
     private int totalFeatureCount;
 
     CategorySet(Checksheet sheetOne, Checksheet sheetTwo, Configurator config) {
@@ -19,17 +18,15 @@ public class CategorySet {
 
         // attempting to create immutable copies
         totalCategories = new ArrayList();
-        for(int i = 0; i < categoriesOne.size(); i++) {
-            totalCategories.add(categoriesOne.get(i));
-        }
+        totalCategories.addAll(categoriesOne);
 
         featuresOne = sheetOne.getAllFeatures();
         featuresTwo = sheetTwo.getAllFeatures();
         totalFeatureCount = 0;
-        totalCategoryCount = 0;
+        int totalCategoryCount = 0;
         totalFeatures = new ArrayList();
         for(int i = 0; i < config.getSheetCount(); i++) {
-            totalFeatures.add(new ArrayList<String>());
+            totalFeatures.add(new ArrayList<>());
         }
 
         int inserts = 0;
@@ -52,15 +49,15 @@ public class CategorySet {
     }
 
     public String toString() {
-        String output = "\n";
+        StringBuilder output = new StringBuilder("\n");
         System.out.println("Total Categories and Features");
         for(int i = 0; i < totalCategories.size(); i++) {
-            output += totalCategories.get(i) + "\n";
+            output.append(totalCategories.get(i)).append("\n");
             for(int j = 0; j < totalFeatures.get(i).size(); j++) {
-                output += "\t" + totalFeatures.get(i).get(j) + "\n";
+                output.append("\t").append(totalFeatures.get(i).get(j)).append("\n");
             }
         }
-        return(output);
+        return(output.toString());
     }
 
     // compile a master feature list for each category
