@@ -10,7 +10,7 @@
 // unnecessary project files
 .project
 .settings/
-
+.vscode/	
 
 bin/
 
